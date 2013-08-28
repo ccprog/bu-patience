@@ -1,0 +1,320 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://patience.intern/rulesets/evaluate_schema#",
+  "type": "object",
+  "required": [
+    "name"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "name": {},
+    "rule": {}
+  },
+  "oneOf": [
+    {
+      "maxProperties": 1,
+      "properties": {
+        "name": {
+          "enum": [
+            "all",
+            "none"
+          ]
+        }
+      }
+    },
+    {
+      "required": [
+        "rule"
+      ],
+      "oneOf": [
+        {
+          "$ref": "#/definitions/and_or"
+        },
+        {
+          "$ref": "#/definitions/one_card"
+        },
+        {
+          "$ref": "#/definitions/two_card"
+        },
+        {
+          "$ref": "#/definitions/card_sequence"
+        },
+        {
+          "$ref": "#/definitions/one_pile"
+        },
+        {
+          "$ref": "#/definitions/two_pile"
+        },
+        {
+          "$ref": "#/definitions/pile_sequence"
+        },
+        {
+          "$ref": "#/definitions/two_sequence"
+        }
+      ]
+    }
+  ],
+  "definitions": {
+    "and_or": {
+      "properties": {
+        "name": {
+          "enum": [
+            "and",
+            "or"
+          ]
+        },
+        "rule": {
+          "type": "array",
+          "items": {
+            "$ref": "#"
+          },
+          "minItems": 2
+        }
+      }
+    },
+    "one_card": {
+      "properties": {
+        "name": {
+          "enum": [
+            "one_card"
+          ]
+        },
+        "rule": {
+          "type": "object",
+          "required": [
+            "select",
+            "tests"
+          ],
+          "maxProperties": 2,
+          "properties": {
+            "select": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/card_extract"
+            },
+            "tests": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/card_test_list"
+            }
+          }
+        }
+      }
+    },
+    "two_card": {
+      "properties": {
+        "name": {
+          "enum": [
+            "two_card"
+          ]
+        },
+        "rule": {
+          "type": "object",
+          "required": [
+            "first",
+            "second",
+            "tests"
+          ],
+          "maxProperties": 3,
+          "properties": {
+            "first": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/card_extract"
+            },
+            "second": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/card_extract"
+            },
+            "tests": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/card_pair_test_list"
+            }
+          }
+        }
+      }
+    },
+    "card_sequence": {
+      "properties": {
+        "name": {
+          "enum": [
+            "card_sequence"
+          ]
+        },
+        "rule": {
+          "type": "object",
+          "maxProperties": 2,
+          "properties": {
+            "select": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/sequence_extract"
+            },
+            "all_tests": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/card_test_list"
+            },
+            "pairwise_tests": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/card_pair_test_list"
+            },
+            "count": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/card_sequence_count"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "select",
+                "all_tests"
+              ]
+            },
+            {
+              "required": [
+                "select",
+                "pairwise_tests"
+              ]
+            },
+            {
+              "required": [
+                "select",
+                "count"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "one_pile": {
+      "properties": {
+        "name": {
+          "enum": [
+            "one_pile"
+          ]
+        },
+        "rule": {
+          "type": "object",
+          "required": [
+            "select",
+            "tests"
+          ],
+          "maxProperties": 2,
+          "properties": {
+            "select": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/single_pile"
+            },
+            "tests": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/pile_test_list"
+            }
+          }
+        }
+      }
+    },
+    "two_pile": {
+      "properties": {
+        "name": {
+          "enum": [
+            "two_pile"
+          ]
+        },
+        "rule": {
+          "type": "object",
+          "required": [
+            "first",
+            "second",
+            "tests"
+          ],
+          "maxProperties": 3,
+          "properties": {
+            "first": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/single_pile"
+            },
+            "second": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/single_pile"
+            },
+            "tests": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/pile_pair_test_list"
+            }
+          }
+        }
+      }
+    },
+    "pile_sequence": {
+      "properties": {
+        "name": {
+          "enum": [
+            "pile_sequence"
+          ]
+        },
+        "rule": {
+          "type": "object",
+          "maxProperties": 2,
+          "properties": {
+            "select": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/pile_selection_list"
+            },
+            "all_tests": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/pile_test_list"
+            },
+            "pairwise_tests": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/pile_pair_test_list"
+            },
+            "count": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/pile_sequence_count"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "select",
+                "all_tests"
+              ]
+            },
+            {
+              "required": [
+                "select",
+                "pairwise_tests"
+              ]
+            },
+            {
+              "required": [
+                "select",
+                "count"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "two_sequence": {
+      "properties": {
+        "name": {
+          "enum": [
+            "two_sequence"
+          ]
+        },
+        "rule": {
+          "type": "object",
+          "required": [
+            "count"
+          ],
+          "maxProperties": 3,
+          "additionalProperties": false,
+          "properties": {
+            "count": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/pair_count"
+            }
+          },
+          "patternProperties": {
+            "[first|second]_cards": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/sequence_extract"
+            },
+            "[first|second]_piles": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/pile_selection_list"
+            }
+          },
+          "allOf": [
+            {
+              "patternProperties": {
+                "first_[cards|piles]": {}
+              }
+            },
+            {
+              "patternProperties": {
+                "second_[cards|piles]": {}
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://patience.intern/rulesets/action_schema#",
+  "pile_action": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "required": [
+        "on",
+        "name",
+        "rule"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "on": {
+          "enum": [
+            "click",
+            "dblclick",
+            "build"
+          ]
+        },
+        "name": {},
+        "rule": {}
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/selector"
+        }
+      ]
+    }
+  },
+  "deal_action": {
+    "type": "object",
+    "required": [
+      "name",
+      "rule"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "name": {},
+      "rule": {}
+    },
+    "allOf": [
+      {
+        "$ref": "#/definitions/selector"
+      }
+    ]
+  },
+  "definitions": {
+    "iterate": {
+      "properties": {
+        "name": {
+          "enum": [
+            "iterate"
+          ]
+        },
+        "rule": {
+          "type": "array",
+          "items": {
+            "$ref": "#/deal_action"
+          },
+          "minItems": 2
+        }
+      }
+    },
+    "move": {
+      "properties": {
+        "name": {
+          "enum": [
+            "move"
+          ]
+        },
+        "rule": {
+          "type": "object",
+          "required": [
+            "first",
+            "second"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "first": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/priority_pile"
+            },
+            "second": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/priority_pile"
+            },
+            "number": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        }
+      }
+    },
+    "swap": {
+      "properties": {
+        "name": {
+          "enum": [
+            "swap"
+          ]
+        },
+        "rule": {
+          "type": "object",
+          "required": [
+            "first",
+            "second"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "first": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/priority_sequence"
+            },
+            "second": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/priority_sequence"
+            }
+          }
+        }
+      }
+    },
+    "shuffle": {
+      "properties": {
+        "name": {
+          "enum": [
+            "shuffle"
+          ]
+        },
+        "rule": {
+          "type": "object",
+          "required": [
+            "select"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "select": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/sequence_extract"
+            }
+          }
+        }
+      }
+    },
+    "selector": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/iterate"
+        },
+        {
+          "$ref": "#/definitions/move"
+        },
+        {
+          "$ref": "#/definitions/swap"
+        },
+        {
+          "$ref": "#/definitions/shuffle"
+        }
+      ]
+    }
+  }
+}

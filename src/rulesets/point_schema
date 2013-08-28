@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://patience.intern/rulesets/point_schema#",
+  "type": "object",
+  "properties": {
+    "new": {
+      "$ref": "#/definitions/point_count"
+    },
+    "old": {
+      "$ref": "#/definitions/point_count"
+    },
+    "both": {
+      "$ref": "#/definitions/point_count"
+    }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "new",
+        "old"
+      ],
+      "maxProperties": 2
+    },
+    {
+      "required": [
+        "both"
+      ],
+      "maxProperties": 1
+    }
+  ],
+  "definitions": {
+    "point_count": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fixed": {
+          "type": "integer"
+        },
+        "piles": {
+          "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/pile_selection_list"
+        },
+        "cards": {
+          "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/sequence_extract"
+        },
+        "operator": {
+          "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/operator"
+        },
+        "dir": {
+          "enum": [
+            "recto",
+            "verso"
+          ],
+          "default": "recto"
+        },
+        "evaluate": {},
+        "value": {}
+      },
+      "oneof": [
+        {
+          "required": [
+            "fixed"
+          ]
+        },
+        {
+          "required": [
+            "piles"
+          ]
+        },
+        {
+          "required": [
+            "cards"
+          ]
+        }
+      ],
+      "dependencies": {
+        "piles": {
+          "properties": {
+            "evaluate": {
+              "enum": [
+                "index",
+                "position_x",
+                "position_y",
+                "facedown_length",
+                "faceup_length",
+                "total_length",
+                "length"
+              ],
+              "default": "length"
+            },
+            "value": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/pile_compute"
+            }
+          }
+        },
+        "cards": {
+          "properties": {
+            "evaluate": {
+              "enum": [
+                "value",
+                "length"
+              ],
+              "default": "length"
+            },
+            "value": {
+              "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/card_compute"
+            }
+          }
+        },
+        "operator": [
+          "value"
+        ]
+      }
+    }
+  }
+}

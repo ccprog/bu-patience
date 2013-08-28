@@ -1,0 +1,785 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://patience.intern/rulesets/lib_schema#",
+  "definitions": {
+    "position": {
+      "type": "object",
+      "oneOf": [
+        {
+          "required": [
+            "position"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "dir": {
+              "enum": [
+                "recto",
+                "verso"
+              ],
+              "default": "recto"
+            },
+            "position": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "required": [
+            "dir"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "dir": {
+              "enum": [
+                "random"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "to": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dir": {
+          "enum": [
+            "recto",
+            "verso"
+          ],
+          "default": "recto"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "from"
+          ]
+        },
+        {
+          "required": [
+            "to"
+          ]
+        }
+      ]
+    },
+    "compare": {
+      "enum": [
+        "==",
+        "!=",
+        "<",
+        "<=",
+        ">",
+        ">="
+      ],
+      "default": "=="
+    },
+    "operator": {
+      "enum": [
+        "plus",
+        "diff",
+        "abs_diff",
+        "wrapped_diff",
+        "wrapped_abs_diff",
+        "multi",
+        "division",
+        "max",
+        "min"
+      ]
+    },
+    "length_compute": {
+      "type": "integer"
+    },
+    "card_compute": {
+      "type": "integer"
+    },
+    "pile_compute": {
+      "type": "number",
+      "multipleOf": 0.5
+    },
+    "length": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "card_value": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 13
+        },
+        {
+          "enum": [
+            "club",
+            "diamond",
+            "heart",
+            "spade",
+            "red",
+            "black"
+          ]
+        }
+      ]
+    },
+    "card_prop": {},
+    "card_test": {
+      "type": "object",
+      "required": [
+        "prop",
+        "value"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "prop": {
+          "$ref": "#/definitions/card_prop"
+        },
+        "compare": {
+          "$ref": "#/definitions/compare"
+        },
+        "value": {
+          "$ref": "#/definitions/card_value"
+        }
+      }
+    },
+    "card_test_list": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/card_test"
+      }
+    },
+    "card_pair_test": {
+      "type": "object",
+      "required": [
+        "prop"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "prop": {
+          "$ref": "#/definitions/card_prop"
+        },
+        "compare": {
+          "$ref": "#/definitions/compare"
+        },
+        "operator": {
+          "$ref": "#/definitions/operator"
+        },
+        "value": {
+          "$ref": "#/definitions/card_compute"
+        }
+      },
+      "dependencies": {
+        "value": [
+          "operator"
+        ]
+      }
+    },
+    "card_pair_test_list": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/card_pair_test"
+      }
+    },
+    "single_card": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 1,
+      "properties": {
+        "single_tests": {
+          "$ref": "#/definitions/card_test_list"
+        },
+        "position": {
+          "$ref": "#/definitions/position"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "single_tests"
+          ]
+        },
+        {
+          "required": [
+            "position"
+          ]
+        }
+      ]
+    },
+    "card_selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "range": {
+          "$ref": "#/definitions/range"
+        },
+        "single_tests": {
+          "$ref": "#/definitions/card_test_list"
+        },
+        "pairwise_tests": {
+          "$ref": "#/definitions/card_pair_test_list"
+        },
+        "comparison_tests": {
+          "$ref": "#/definitions/card_pair_test_list"
+        },
+        "dir": {
+          "enum": [
+            "recto",
+            "verso"
+          ],
+          "default": "recto"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "range"
+          ],
+          "maxProperties": 1
+        },
+        {
+          "required": [
+            "single_tests"
+          ],
+          "maxProperties": 1
+        },
+        {
+          "required": [
+            "pairwise_tests"
+          ],
+          "maxProperties": 2,
+          "dependencies": {
+            "dir": [
+              "pairwise_tests"
+            ]
+          }
+        },
+        {
+          "required": [
+            "comparison_tests"
+          ],
+          "maxProperties": 2,
+          "dependencies": {
+            "dir": [
+              "comparison_tests"
+            ]
+          }
+        }
+      ]
+    },
+    "card_selection_list": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/card_selection"
+      }
+    },
+    "card_sequence_count": {
+      "type": "object",
+      "required": [
+        "value"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "compare": {
+          "$ref": "#/definitions/compare"
+        },
+        "value": {
+          "$ref": "#/definitions/length"
+        }
+      }
+    },
+    "part_selection": {
+      "enum": [
+        "facedown",
+        "faceup"
+      ]
+    },
+    "part_selection_list": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/part_selection"
+      }
+    },
+    "pile_value": {
+      "oneOf": [
+        {
+          "type": "number",
+          "multipleOf": 0.5,
+          "minimum": 0
+        },
+        {
+          "enum": [
+            "Cell",
+            "Foundation",
+            "Tableau",
+            "Stock",
+            "Waste",
+            "Reserve",
+            "self",
+            "other",
+            "none"
+          ]
+        }
+      ]
+    },
+    "pile_prop": {},
+    "pile_card_prop": {
+      "type": "object",
+      "required": [
+        "parts",
+        "card",
+        "prop"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "parts": {
+          "$ref": "#/definitions/part_selection_list"
+        },
+        "card": {
+          "$ref": "#/definitions/single_card"
+        },
+        "prop": {
+          "$ref": "#/definitions/card_prop"
+        }
+      }
+    },
+    "pile_card_count": {
+      "type": "object",
+      "required": [
+        "parts",
+        "card_list"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "parts": {
+          "$ref": "#/definitions/part_selection_list"
+        },
+        "card_list": {
+          "$ref": "#/definitions/card_selection_list"
+        }
+      }
+    },
+    "pile_test": {
+      "type": "object",
+      "required": [
+        "value"
+      ],
+      "additionalProperties": false,
+      "maxProperties": 3,
+      "properties": {
+        "prop": {
+          "$ref": "#/definitions/pile_prop"
+        },
+        "card": {
+          "$ref": "#/definitions/pile_card_prop"
+        },
+        "count": {
+          "$ref": "#/definitions/pile_card_count"
+        },
+        "compare": {
+          "$ref": "#/definitions/compare"
+        },
+        "value": {}
+      },
+      "oneOf": [
+        {
+          "required": [
+            "prop"
+          ]
+        },
+        {
+          "required": [
+            "card"
+          ]
+        },
+        {
+          "required": [
+            "count"
+          ]
+        }
+      ],
+      "dependencies": {
+        "prop": {
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/pile_value"
+            }
+          }
+        },
+        "card": {
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/card_value"
+            }
+          }
+        },
+        "count": {
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/length"
+            }
+          }
+        }
+      }
+    },
+    "pile_test_list": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/pile_test"
+      }
+    },
+    "pile_pair_test": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "prop": {
+          "$ref": "#/definitions/pile_prop"
+        },
+        "card": {
+          "$ref": "#/definitions/pile_card_prop"
+        },
+        "count": {
+          "$ref": "#/definitions/pile_card_count"
+        },
+        "compare": {
+          "$ref": "#/definitions/compare"
+        },
+        "operator": {
+          "$ref": "#/definitions/operator"
+        },
+        "value": {}
+      },
+      "oneOf": [
+        {
+          "required": [
+            "prop"
+          ]
+        },
+        {
+          "required": [
+            "card"
+          ]
+        },
+        {
+          "required": [
+            "count"
+          ]
+        }
+      ],
+      "dependencies": {
+        "prop": {
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/pile_compute"
+            }
+          }
+        },
+        "card": {
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/card_compute"
+            }
+          }
+        },
+        "count": {
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/length_compute"
+            }
+          }
+        },
+        "value": [
+          "operator"
+        ]
+      }
+    },
+    "pile_pair_test_list": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/pile_pair_test"
+      }
+    },
+    "single_pile": {
+      "type": "object",
+      "maxProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "enum": [
+            "self",
+            "other"
+          ]
+        },
+        "single_tests": {
+          "$ref": "#/definitions/pile_test_list"
+        },
+        "position": {
+          "$ref": "#/definitions/position"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "role"
+          ]
+        },
+        {
+          "required": [
+            "single_tests"
+          ]
+        },
+        {
+          "required": [
+            "position"
+          ]
+        }
+      ]
+    },
+    "pile_selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "range": {
+          "$ref": "#/definitions/range"
+        },
+        "single_tests": {
+          "$ref": "#/definitions/pile_test_list"
+        },
+        "pairwise_tests": {
+          "$ref": "#/definitions/pile_pair_test_list"
+        },
+        "comparison_tests": {
+          "$ref": "#/definitions/pile_pair_test_list"
+        },
+        "dir": {
+          "enum": [
+            "recto",
+            "verso"
+          ],
+          "default": "recto"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "range"
+          ],
+          "maxProperties": 1
+        },
+        {
+          "required": [
+            "single_tests"
+          ],
+          "maxProperties": 1
+        },
+        {
+          "required": [
+            "pairwise_tests"
+          ],
+          "maxProperties": 2,
+          "dependencies": {
+            "dir": [
+              "pairwise_tests"
+            ]
+          }
+        },
+        {
+          "required": [
+            "comparison_tests"
+          ],
+          "maxProperties": 2,
+          "dependencies": {
+            "dir": [
+              "comparison_tests"
+            ]
+          }
+        }
+      ]
+    },
+    "pile_selection_list": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/pile_selection"
+      }
+    },
+    "pile_sequence_count": {
+      "type": "object",
+      "required": [
+        "value"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "compare": {
+          "$ref": "#/definitions/compare"
+        },
+        "value": {
+          "$ref": "#/definitions/length"
+        }
+      }
+    },
+    "priority_pile": {
+      "type": "object",
+      "required": [
+        "pile",
+        "priority"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "pile": {
+          "$ref": "#/definitions/pile_selection_list"
+        },
+        "priority": {
+          "$ref": "#/definitions/position"
+        }
+      }
+    },
+    "single_role": {
+      "type": "object",
+      "required": [
+        "heap"
+      ],
+      "oneOf": [
+        {
+          "required": [
+            "part"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "heap": {
+              "enum": [
+                "self",
+                "other"
+              ]
+            },
+            "part": {
+              "$ref": "#/definitions/part_selection"
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "heap": {
+              "enum": [
+                "cards"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "role_list": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/single_role"
+      }
+    },
+    "card_extract": {
+      "type": "object",
+      "required": [
+        "card"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "$ref": "#/definitions/single_role"
+        },
+        "pile": {
+          "$ref": "#/definitions/single_pile"
+        },
+        "parts": {
+          "$ref": "#/definitions/part_selection_list"
+        },
+        "card": {
+          "$ref": "#/definitions/single_card"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "role"
+          ]
+        },
+        {
+          "required": [
+            "pile",
+            "parts"
+          ]
+        }
+      ]
+    },
+    "sequence_extract": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "roles": {
+          "$ref": "#/definitions/role_list"
+        },
+        "piles": {
+          "$ref": "#/definitions/pile_selection_list"
+        },
+        "parts": {
+          "$ref": "#/definitions/part_selection_list"
+        },
+        "cards": {
+          "$ref": "#/definitions/card_selection_list"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "roles"
+          ]
+        },
+        {
+          "required": [
+            "piles",
+            "parts"
+          ]
+        }
+      ]
+    },
+    "priority_sequence": {
+      "type": "object",
+      "required": [
+        "card",
+        "priority"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "card": {
+          "$ref": "#/definitions/sequence_extract"
+        },
+        "priority": {
+          "$ref": "#/definitions/position"
+        }
+      }
+    },
+    "pair_count": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "compare": {
+          "$ref": "#/definitions/compare"
+        },
+        "operator": {
+          "$ref": "#/definitions/operator"
+        },
+        "value": {
+          "$ref": "#/definitions/length_compute"
+        }
+      },
+      "dependencies": {
+        "value": [
+          "operator"
+        ]
+      }
+    }
+  }
+}

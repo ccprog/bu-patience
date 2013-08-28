@@ -1,0 +1,224 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://patience.intern/rulesets/ruleset_schema#",
+  "type": "object",
+  "required": [
+    "title",
+    "help",
+    "set",
+    "count",
+    "point_target",
+    "pilegroups"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "help": {
+      "type": "string",
+      "format": "uri"
+    },
+    "set": {
+      "type": "integer",
+      "multipleOf": 2,
+      "minimum": 4,
+      "maximum": 54
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "point_target": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pilegroups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "pileclass",
+          "piles"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "pileclass": {
+            "type": "string",
+            "enum": [
+              "Cell",
+              "Foundation",
+              "Tableau",
+              "Stock",
+              "Waste",
+              "Reserve"
+            ]
+          },
+          "options": {
+            "$ref": "#/definitions/options"
+          },
+          "piles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "position"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "position": {
+                  "type": "object",
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "x": {
+                      "type": "number",
+                      "multipleOf": 0.5,
+                      "minimum": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "multipleOf": 0.5,
+                      "minimum": 0
+                    }
+                  }
+                },
+                "options": {
+                  "$ref": "#/definitions/options"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "deal_action": {
+      "$ref": "http://patience.intern/rulesets/action_schema#/deal_action"
+    }
+  },
+  "definitions": {
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "direction": {
+          "enum": [
+            "up",
+            "down",
+            "left",
+            "right"
+          ],
+          "default": "down"
+        },
+        "spread": {
+          "type": "number",
+          "multipleOf": 0.5,
+          "minimum": 1
+        },
+        "initial_facedown": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "initial_faceup": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "click": {
+          "$ref": "#/definitions/related"
+        },
+        "autofill": {
+          "$ref": "#/definitions/related"
+        },
+        "fill": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "method": {
+              "enum": [
+                "incremental",
+                "once",
+                "other"
+              ],
+              "default": "incremental"
+            },
+            "dir": {
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "asc"
+            },
+            "base": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 13
+            }
+          }
+        },
+        "countdown": {
+          "type": "object",
+          "required": [
+            "which",
+            "number"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "which": {
+              "enum": [
+                "click",
+                "dblclick",
+                "build"
+              ]
+            },
+            "number": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "action": {
+          "$ref": "http://patience.intern/rulesets/action_schema#/pile_action"
+        },
+        "click_rule": {
+          "$ref": "http://patience.intern/rulesets/evaluate_schema#"
+        },
+        "drag_rule": {
+          "$ref": "http://patience.intern/rulesets/evaluate_schema#"
+        },
+        "build_rule": {
+          "$ref": "http://patience.intern/rulesets/evaluate_schema#"
+        },
+        "pairing_rule": {
+          "$ref": "http://patience.intern/rulesets/evaluate_schema#"
+        },
+        "point_rule": {
+          "$ref": "http://patience.intern/rulesets/point_schema#"
+        }
+      },
+      "dependencies": {
+        "direction": [
+          "spread"
+        ]
+      }
+    },
+    "related": {
+      "type": "object",
+      "required": [
+        "relations"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "relations": {
+          "$ref": "http://patience.intern/rulesets/lib_schema#/definitions/pile_selection_list"
+        },
+        "number": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}
