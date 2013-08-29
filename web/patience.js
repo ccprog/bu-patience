@@ -1821,6 +1821,8 @@ Area = (function() {
   };
 
   to_view = function(pile) {
+    var dl;
+    dl = pile.facedown_cards.length;
     return pile.facedown_cards.map(function(card, i) {
       return {
         key: "" + (pile.position.x * 100 + pile.position.y) + "_b_" + i,
@@ -1831,7 +1833,7 @@ Area = (function() {
       };
     }).concat(pile.faceup_cards.map(function(card, i) {
       return {
-        key: "" + (pile.position.x * 100 + pile.position.y) + "_" + card.value + "_" + card.suit + "_" + i,
+        key: "" + (pile.position.x * 100 + pile.position.y) + "_" + card.value + "_" + card.suit + "_" + (i + dl),
         ref: addr[0] + ("" + card.value + "_" + card.suit) + addr[1],
         back: false,
         x: 0,
@@ -2060,13 +2062,8 @@ Area = (function() {
         }
       }
     });
-    total = pile.total_length();
-    card_names = to_view(pile);
     stack = this.get_stack(pile);
-    gd = stack.inner.selectAll("img").data(card_names, function(d) {
-      return d.key;
-    });
-    gd.enter().append("img");
+    total = pile.total_length();
     switch (pile.direction) {
       case "down":
         stack.trans_y = Math.min(raster.fan_y, raster.y * (pile.spread - 1) / (total - 1));
@@ -2080,13 +2077,18 @@ Area = (function() {
       case "left":
         stack.trans_x = -Math.min(raster.fan_x, raster.x * (pile.spread - 1) / (total - 1));
     }
-    gd.call(dragging).attr("src", function(d) {
+    card_names = to_view(pile);
+    gd = stack.inner.selectAll("img").data(card_names, function(d) {
+      return d.key;
+    });
+    gd.enter().append("img");
+    gd.attr("src", function(d) {
       return d.ref;
     }).style("left", function(d, i) {
       return (stack.trans_x * i * _this.scale).toFixed(2) + "px";
     }).style("top", function(d, i) {
       return (stack.trans_y * i * _this.scale).toFixed(2) + "px";
-    });
+    }).call(dragging);
     gd.exit().remove();
     flashing = null;
     gd.each(function(d, i) {

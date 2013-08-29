@@ -8,6 +8,7 @@ class Area
         fan_y: 26
 
     to_view = (pile) ->
+        dl = pile.facedown_cards.length
         pile.facedown_cards.map( (card, i) ->
             key: "#{pile.position.x*100 + pile.position.y}_b_#{i}"
             ref: addr[0] + "back" + addr[1],
@@ -15,7 +16,7 @@ class Area
             x: 0,
             y: 0
         ).concat(pile.faceup_cards.map (card, i) ->
-            key: "#{pile.position.x*100 + pile.position.y}_#{card.value}_#{card.suit}_#{i}"
+            key: "#{pile.position.x*100 + pile.position.y}_#{card.value}_#{card.suit}_#{i + dl}"
             ref: addr[0] + "#{card.value}_#{card.suit}" + addr[1]
             back: false
             x: 0,
@@ -190,11 +191,8 @@ class Area
                         pile.on_drop over.pile, i
             )
 
-        total = pile.total_length()
-        card_names = to_view pile
         stack = @get_stack(pile)
-        gd = stack.inner.selectAll("img").data(card_names, (d) -> d.key)
-        gd.enter().append("img")
+        total = pile.total_length()
         switch pile.direction
             when "down"
                 stack.trans_y = Math.min raster.fan_y, raster.y * (pile.spread - 1) / (total - 1)
@@ -204,10 +202,14 @@ class Area
                 stack.trans_x = Math.min raster.fan_x, raster.x * (pile.spread - 1) / (total - 1)
             when "left"
                 stack.trans_x = -Math.min raster.fan_x, raster.x * (pile.spread - 1) / (total - 1)
-        gd.call(dragging)
-            .attr("src", (d) -> d.ref)
+
+        card_names = to_view pile
+        gd = stack.inner.selectAll("img").data(card_names, (d) -> d.key)
+        gd.enter().append("img")
+        gd.attr("src", (d) -> d.ref)
             .style("left", (d, i) => (stack.trans_x * i * @scale).toFixed(2) + "px")
             .style("top", (d, i) => (stack.trans_y * i * @scale).toFixed(2) + "px")
+            .call(dragging)
         gd.exit().remove()
 
         flashing = null
