@@ -1,0 +1,89 @@
+body {
+  font-family: sans-serif;
+  background-color: #005010;
+  margin:0;
+}
+#page {
+  position:fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0; 
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+div#controls {
+  margin: 1em;
+  font-size: 1.15em;
+  -webkit-box-flex: 0;
+  -moz-box-flex: 0;
+  -webkit-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  -webkit-align-self: flex-start;
+  -ms-flex-item-align: start;
+  align-self: flex-start;
+}
+div#area {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -webkit-flex: 1 1 auto;
+   -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  -webkit-align-self: stretch;
+  -ms-flex-item-align: stretch;
+  align-self: stretch;
+  position: relative;
+}
+.stack{
+  position:absolute;
+  z-index:1;
+}
+img {
+  position: absolute;
+  width: 101px;
+  height: 156px;
+}
+.stack>img {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+button, select, input {
+  margin:0.5em 0.2em;
+  font-size:1em;
+}
+select {
+  width:10em;
+}
+span.info {
+  display:inline-block;
+  position:relative;
+  margin:0.5em 0.2em;
+  padding: 0.1em 0.3em;
+  background-color:#a0c9a8;
+  width:7em; 
+}
+span.win {
+  background-color:white;
+}
+span.data {
+  position:absolute;
+  right:0;
+  padding-right:0.3em;
+}
+#help {
+    width:auto;
+    cursor:pointer;
+}
+

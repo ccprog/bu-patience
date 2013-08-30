@@ -61,9 +61,10 @@ class Area
 
     resize_timeout = null
 
-    constructor: (@pad, @infos, @sheet, standard_url) ->
-        for i in [0...@sheet.cssRules.length]
-            if /^img/.test @sheet.cssRules[i].cssText then @img_rule_index = i
+    constructor: (@pad, @infos, standard_url) ->
+        sheet = d3.select("head").append("style").property("sheet")
+        sheet.insertRule "img {}", 0
+        @rule = sheet.cssRules[0]
 
         try
             rs_url = localStorage.getItem("ruleset")
@@ -103,7 +104,7 @@ class Area
         @hover = false
 
         @width = raster.x * size.x + raster.space
-        @height = raster.y * size.y + raster.space
+        @height = raster.y * size.y
         @scale = 1
         d3.select(window).on "resize", () =>
             if resize_timeout
@@ -121,10 +122,8 @@ class Area
 
     resize: ->
         @scale = Math.min @pad.property("clientWidth")/ @width, @pad.property("clientHeight")/ @height
-        w = Math.round(101*@scale)
-        h = Math.round(156*@scale)
-        @sheet.deleteRule @img_rule_index
-        @sheet.insertRule "img {position:absolute;width:#{w}px;height:#{h}px}", @img_rule_index
+        @rule.style.width = Math.round(101*@scale) + "px"
+        @rule.style.height = Math.round(156*@scale) + "px"
         for stack in @stacks
             stack.outer.style("top", Math.round(@scale * stack.y) + "px")
         	    .style("left", Math.round(@scale * stack.x) + "px")
@@ -134,7 +133,7 @@ class Area
         stack =
             pile: pile
             x: raster.x * pile.position.x + raster.space
-            y: raster.y * pile.position.y + raster.space
+            y: raster.y * pile.position.y
             trans_x: 0
             trans_y: 0
         stack.outer = @pad.append("div")
@@ -236,6 +235,5 @@ class Area
 init = (standard_url) ->
     pad = d3.select("#area")
     infos = d3.selectAll(".info")
-    sheet = d3.select("style").property("sheet")
-    area = new Area pad, infos, sheet, standard_url
+    area = new Area pad, infos, standard_url
 

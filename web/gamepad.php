@@ -24,48 +24,10 @@ $read = current($rulesets)["read"];
 <title>Patience</title>
   <script type="application/ecmascript" charset="utf-8" src="lib/d3.v3.js" ></script>
   <script type="application/ecmascript" src="patience.js" ></script>
-  <style>
-body { font-family:sans-serif;background-color:#005010;margin:0; }
-div#controls { margin:1.5em 1em;font-size:1.15em; }
-div#area { position:fixed;top:4em;bottom:0;left:0;right:0; }
-.stack{position:absolute;z-index:1;}
-img {
-  position:absolute;
-  width:101px;
-  height:156px;
-}
-.stack>img {
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-}
-form { display:inline; }
-button, select, input { margin:0 0.2em;font-size:1em; }
-span.info {
-  display:inline-block;
-  position:relative;
-  margin:0 0.2em;
-  padding: 0.1em 0.3em;
-  background-color:#a0c9a8;
-  width:7em; 
-}
-span.win {
-  background-color:white;
-}
-span.data {
-  position:absolute;
-  right:0;
-  padding-right:0.3em;
-}
-#help {
-    width:auto;
-    cursor:pointer;
-}
-
-select { width:10em; }
-  </style>
+  <link rel="stylesheet" type="text/css" href="patience.css" />
 </head>
 <body onload="init('<?php echo $file ?>')">
+  <div id="page">
   <div id="controls">
     <button id="prev" title="Rückgängig">&#8592;</button>
     <button id="next" title="Wiederholen">&#8594;</button>
@@ -86,6 +48,7 @@ foreach($rulesets as $key => $value) {
     <span id="time" class="info">Zeit:<span class="data"></span></span>
   </div>
   <div id="area">
+  </div>
   </div>
 </body>
 </html>

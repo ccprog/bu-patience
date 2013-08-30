@@ -1891,17 +1891,14 @@ Area = (function() {
 
   resize_timeout = null;
 
-  function Area(pad, infos, sheet, standard_url) {
-    var i, rs_url, _i, _ref,
+  function Area(pad, infos, standard_url) {
+    var rs_url, sheet,
       _this = this;
     this.pad = pad;
     this.infos = infos;
-    this.sheet = sheet;
-    for (i = _i = 0, _ref = this.sheet.cssRules.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-      if (/^img/.test(this.sheet.cssRules[i].cssText)) {
-        this.img_rule_index = i;
-      }
-    }
+    sheet = d3.select("head").append("style").property("sheet");
+    sheet.insertRule("img {}", 0);
+    this.rule = sheet.cssRules[0];
     try {
       rs_url = localStorage.getItem("ruleset");
     } catch (e) {
@@ -1953,7 +1950,7 @@ Area = (function() {
     this.stacks = [];
     this.hover = false;
     this.width = raster.x * size.x + raster.space;
-    this.height = raster.y * size.y + raster.space;
+    this.height = raster.y * size.y;
     this.scale = 1;
     d3.select(window).on("resize", function() {
       if (resize_timeout) {
@@ -1974,12 +1971,10 @@ Area = (function() {
   };
 
   Area.prototype.resize = function() {
-    var h, stack, w, _i, _len, _ref, _results;
+    var stack, _i, _len, _ref, _results;
     this.scale = Math.min(this.pad.property("clientWidth") / this.width, this.pad.property("clientHeight") / this.height);
-    w = Math.round(101 * this.scale);
-    h = Math.round(156 * this.scale);
-    this.sheet.deleteRule(this.img_rule_index);
-    this.sheet.insertRule("img {position:absolute;width:" + w + "px;height:" + h + "px}", this.img_rule_index);
+    this.rule.style.width = Math.round(101 * this.scale) + "px";
+    this.rule.style.height = Math.round(156 * this.scale) + "px";
     _ref = this.stacks;
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1995,7 +1990,7 @@ Area = (function() {
     stack = {
       pile: pile,
       x: raster.x * pile.position.x + raster.space,
-      y: raster.y * pile.position.y + raster.space,
+      y: raster.y * pile.position.y,
       trans_x: 0,
       trans_y: 0
     };
@@ -2117,9 +2112,8 @@ Area = (function() {
 })();
 
 init = function(standard_url) {
-  var area, infos, pad, sheet;
+  var area, infos, pad;
   pad = d3.select("#area");
   infos = d3.selectAll(".info");
-  sheet = d3.select("style").property("sheet");
-  return area = new Area(pad, infos, sheet, standard_url);
+  return area = new Area(pad, infos, standard_url);
 };
