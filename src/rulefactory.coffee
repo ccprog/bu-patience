@@ -1,3 +1,12 @@
+## On compilation, this file is splitted:
+## parts between output-start rulefactory and output-end rulefactory comments
+## form a coffeescript compiled as part of the patience.js file,
+## containing the base and rulefactory objects
+## parts between output-start validate and output-end validate comments
+## are first compiled from coffescript and then directly interpreted as a nodejs module
+## The exported objects are the recorded as the json schema files used to validate
+## json ruleset files
+
 ## base structures
 
 # output-start rulefactory
@@ -32,6 +41,8 @@ names = do () ->
 # output-start rulefactory
 rulefactory = do () ->
 # output-start validate
+
+## compare function
     compare =
         "==": (val1, val2) -> val1 == val2
         "!=": (val1, val2) -> val1 != val2
@@ -40,6 +51,7 @@ rulefactory = do () ->
         ">": (val1, val2) -> val1 > val2
         ">=": (val1, val2) -> val1 >= val2
 
+## computation functions
     operator =
         "plus": (val1, val2) ->
             val1 + val2
@@ -61,6 +73,7 @@ rulefactory = do () ->
         "min": (val1, val2) ->
             Math.min(val1, val2)
 
+## card properties
     numeric_card_props =
         "value": (card) -> card.value
 
@@ -70,6 +83,7 @@ rulefactory = do () ->
         "color": (card) -> card.getColor()
         "suit": (card) -> card.suit
 
+## pile properties
     numeric_pile_props =
         "index": (pile, piles) -> piles.indexOf pile
         "position_x": (pile, piles) -> pile.position.x
@@ -92,6 +106,8 @@ rulefactory = do () ->
                 else
                     "none"
 # output-end rulefactory
+
+## export string enumerations
     return {
         suit: ["club", "diamond", "heart", "spade"]
         color: ["red", "black"]
@@ -425,7 +441,7 @@ lib_schema.definitions.card_sequence_count =
         compare[test.compare ? "=="](cards.length, test.value)
 # output-end rulefactory
 
-## return either all facedown or all faceup cards in a pile, 
+## return either all facedown or all faceup cards in a pile,
 ## cards a wrapped in an object describing their position in the game
 
 # output-start validate
@@ -488,7 +504,7 @@ lib_schema.definitions.pile_prop =
 ## return a property of a card in a pile
 
 # output-start validate
-lib_schema.definitions.pile_card_prop = 
+lib_schema.definitions.pile_card_prop =
     type: "object"
     required: [ "parts", "card", "prop" ]
     additionalProperties: false
@@ -769,7 +785,7 @@ lib_schema.definitions.pile_sequence_count =
 ## pick one pile of a filtered pile list by priority rule
 
 # output-start validate
-lib_schema.definitions.priority_pile = 
+lib_schema.definitions.priority_pile =
     type: "object"
     required: [ "pile", "priority" ]
     additionalProperties: false
@@ -900,7 +916,7 @@ lib_schema.definitions.sequence_extract =
 ## pick one card of a filtered card list by priority rule
 
 # output-start validate
-lib_schema.definitions.priority_sequence = 
+lib_schema.definitions.priority_sequence =
     type: "object"
     required: [ "card", "priority" ]
     additionalProperties: false
@@ -945,7 +961,7 @@ evaluate_schema_definitions = {}
 
 evaluate_schema_definitions.and_or =
     properties:
-        name: 
+        name:
             enum: [ "and", "or" ]
         rule:
             type: "array"
@@ -976,9 +992,9 @@ evaluate_schema_definitions.and_or =
 ## test concerning one card
 
 # output-start validate
-evaluate_schema_definitions.one_card = 
+evaluate_schema_definitions.one_card =
     properties:
-        name: 
+        name:
             enum: [ "one_card" ]
         rule:
             type: "object"
@@ -1000,7 +1016,7 @@ evaluate_schema_definitions.one_card =
 # output-start validate
 evaluate_schema_definitions.two_card =
     properties:
-        name: 
+        name:
             enum: [ "two_card" ]
         rule:
             type: "object"
@@ -1023,9 +1039,9 @@ evaluate_schema_definitions.two_card =
 ## test concerning a card sequence
 
 # output-start validate
-evaluate_schema_definitions.card_sequence = 
+evaluate_schema_definitions.card_sequence =
     properties:
-        name: 
+        name:
             enum: [ "card_sequence" ]
         rule:
             type: "object"
@@ -1063,7 +1079,7 @@ evaluate_schema_definitions.card_sequence =
 # output-start validate
 evaluate_schema_definitions.one_pile =
     properties:
-        name: 
+        name:
             enum: [ "one_pile" ]
         rule:
             type: "object"
@@ -1085,7 +1101,7 @@ evaluate_schema_definitions.one_pile =
 # output-start validate
 evaluate_schema_definitions.two_pile =
     properties:
-        name: 
+        name:
             enum: [ "two_pile" ]
         rule:
             type: "object"
@@ -1108,9 +1124,9 @@ evaluate_schema_definitions.two_pile =
 ## test concerning a pile sequence
 
 # output-start validate
-evaluate_schema_definitions.pile_sequence = 
+evaluate_schema_definitions.pile_sequence =
     properties:
-        name: 
+        name:
             enum: [ "pile_sequence" ]
         rule:
             type: "object"
@@ -1148,7 +1164,7 @@ evaluate_schema_definitions.pile_sequence =
 # output-start validate
 evaluate_schema_definitions.two_sequence =
     properties:
-        name: 
+        name:
             enum: [ "two_sequence" ]
         rule:
             type: "object"
@@ -1201,7 +1217,7 @@ action_schema_definitions = {}
 
 action_schema_definitions.iterate =
     properties:
-        name: 
+        name:
             enum: [ "iterate" ]
         rule:
             type: "array"
@@ -1219,9 +1235,9 @@ action_schema_definitions.iterate =
 ## and repeats moving one card until one pile description is exhausted
 
 # output-start validate
-action_schema_definitions.move = 
+action_schema_definitions.move =
     properties:
-        name: 
+        name:
             enum: [ "move" ]
         rule:
             type: "object"
@@ -1255,7 +1271,7 @@ action_schema_definitions.move =
 # output-start validate
 action_schema_definitions.swap =
     properties:
-        name: 
+        name:
             enum: [ "swap" ]
         rule:
             type: "object"
@@ -1281,7 +1297,7 @@ action_schema_definitions.swap =
 # output-start validate
 action_schema_definitions.shuffle =
     properties:
-        name: 
+        name:
             enum: [ "shuffle" ]
         rule:
             type: "object"
@@ -1367,7 +1383,7 @@ point_schema_definitions =
             count
 # output-end rulefactory
 
-## top-level rules
+## top-level schemas
 
 # output-start validate
 ruleset_schema =
@@ -1423,6 +1439,7 @@ ruleset_schema =
                                 options: { $ref: "#/definitions/options" }
         deal_action: { $ref: "http://patience.intern/rulesets/action_schema#/deal_action" }
     definitions:
+## pile option schema
         options:
             type: "object"
             additionalProperties: false
@@ -1475,6 +1492,10 @@ ruleset_schema =
 # output-start rulefactory
     return {
 # output-end rulefactory
+
+## return an evaluation function
+## this function returns a boolean to indicate whether an action (click, dblclick, drag, build) is allowed
+
 # output-start validate
 evaluate_schema =
     $schema: "http://json-schema.org/draft-04/schema#"
@@ -1509,6 +1530,10 @@ evaluate_schema =
         evaluate: (rule, cards, self, other, piles) ->
             evaluator[rule.name](rule.rule, cards, self, other, piles)
 # output-end rulefactory
+
+## return a move function
+## this function moves cards in or between piles
+
 # output-start validate
 action_schema =
     $schema: "http://json-schema.org/draft-04/schema#"
@@ -1543,6 +1568,13 @@ action_schema.definitions.selector =
         { "$ref": "#/definitions/shuffle" }
     ]
 # output-end validate
+
+## return a number of points awarded for a pile state
+## if a "both" rule is defined, points are awarded for the state of the pile at any time
+## if an "old" rule is defined, it is possible to state a virtual number of points that
+## the pile had before it changes (and that are substracted from the point total)
+## and a new number awarded after the move (that are added to the point total)
+
 # output-start rulefactory
         get_action: (rule) ->
             return (self, other, piles) ->
@@ -1571,6 +1603,9 @@ point_schema =
             if not rule[timing]? and not rule.both? then return 0
             point_count(rule[timing] ? rule.both, pile, null, piles)
 # output-end rulefactory
+
+## return a list of piles used as targets for a click action or sources for an autofill action
+
 # output-start validate
 ruleset_schema.definitions.related =
     type: "object"
@@ -1601,7 +1636,7 @@ ruleset_schema.definitions.related =
     }
 # output-end rulefactory
 
-## node.js binding
+## node.js module binding
 
 # output-start validate
 exports.ruleset_schema = ruleset_schema

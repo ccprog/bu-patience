@@ -74,6 +74,21 @@ Pile = (function() {
     };
   }
 
+  Pile.prototype.init_related = function(piles) {
+    var r, _i, _len, _ref, _results;
+    _ref = ["click", "autofill"];
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      r = _ref[_i];
+      if (this[r] != null) {
+        _results.push(this[r].related = rulefactory.related(this[r].relations, this, piles));
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  };
+
   Pile.prototype.total_length = function() {
     return this.facedown_cards.length + this.faceup_cards.length;
   };
@@ -92,21 +107,6 @@ Pile = (function() {
 
   Pile.prototype.marked_indexes = function() {
     return [Math.min(this.facedown_cards.length, this.total_length() - this.marked_withdraw), Math.max(0, this.faceup_cards.length - this.marked_withdraw)];
-  };
-
-  Pile.prototype.init_related = function(piles) {
-    var r, _i, _len, _ref, _results;
-    _ref = ["click", "autofill"];
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      r = _ref[_i];
-      if (this[r] != null) {
-        _results.push(this[r].related = rulefactory.related(this[r].relations, this, piles));
-      } else {
-        _results.push(void 0);
-      }
-    }
-    return _results;
   };
 
   Pile.prototype.show_withdraw = function(number) {
