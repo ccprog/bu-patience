@@ -10,7 +10,8 @@ A HTML5 browser game coded in Coffeescript, aimed at implementing a number of pa
   As the author states, 
   > D3 supports so-called “modern” browsers, which generally means everything except IE8 and below.
 - Positioning and dragging of cards is realised with [CSS Transforms](http://www.w3.org/TR/css3-transforms)
-- Gamepad layout uses [CSS flexbox](http://www.w3.org/TR/css3-flexbox)
+- Gamepad layout uses [CSS flexbox](http://www.w3.org/TR/css3-flexbox), but also applies `display:table;`
+  as a fallback for IE9
 
 ## Rulesets
 

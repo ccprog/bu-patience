@@ -55,6 +55,7 @@ cards/card_6_club.png
 cards/card_red_joker.png
 cards/card_1_heart.png
 cards/card_6_diamond.png
+lib/d3.v3.js
 SETTINGS:
 prefer-online
 NETWORK:

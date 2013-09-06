@@ -2030,6 +2030,7 @@ Area = (function() {
         });
       }
     }).on("drag", function(d, i) {
+      var pre, _i, _len, _ref, _results;
       if (can_drag) {
         if (!_this.hover) {
           stack.outer.style("z-index", "5");
@@ -2037,19 +2038,27 @@ Area = (function() {
         }
         d.x = d3.event.x;
         d.y = d3.event.y;
-        hg.style("-webkit-transform", "translate(" + d.x + "px," + d.y + "px)");
-        return hg.style("transform", "translate(" + d.x + "px," + d.y + "px)");
+        _ref = ["-moz-", "-webkit-", ""];
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          pre = _ref[_i];
+          _results.push(hg.style(pre + "transform", "translate(" + d.x + "px," + d.y + "px)"));
+        }
+        return _results;
       }
     }).on("dragend", function(d, i) {
-      var over, rx, ry;
+      var over, pre, rx, ry, _i, _len, _ref;
       if (can_drag) {
         rx = stack.x + (d.x / _this.scale) + i * stack.trans_x;
         ry = stack.y + (d.y / _this.scale) + i * stack.trans_y;
         over = is_over(_this.stacks, rx, ry);
         d.x = 0;
         d.y = 0;
-        hg.style("-webkit-transform", null);
-        hg.style("transform", null);
+        _ref = ["-moz-", "-webkit-", ""];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          pre = _ref[_i];
+          hg.style(pre + "transform", null);
+        }
         can_drag = _this.hover = false;
         stack.outer.style("z-index", null);
         if (over && over.pile !== pile) {

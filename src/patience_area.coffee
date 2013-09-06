@@ -190,8 +190,8 @@ class Area
                         @hover = true
                     d.x = d3.event.x
                     d.y = d3.event.y
-                    hg.style("-webkit-transform", "translate(#{d.x}px,#{d.y}px)")
-                    hg.style("transform", "translate(#{d.x}px,#{d.y}px)")
+                    for pre in [ "-moz-", "-webkit-", "" ]
+                        hg.style(pre + "transform", "translate(#{d.x}px,#{d.y}px)")
             ).on("dragend", (d, i) =>
                 if can_drag
                     rx = stack.x + (d.x / @scale) + i * stack.trans_x
@@ -199,8 +199,8 @@ class Area
                     over = is_over @stacks, rx, ry
                     d.x = 0
                     d.y = 0
-                    hg.style("-webkit-transform", null)
-                    hg.style("transform", null)
+                    for pre in [ "-moz-", "-webkit-", "" ]
+                        hg.style(pre + "transform", null)
                     can_drag = @hover = false
                     stack.outer.style "z-index", null
                     if over && over.pile isnt pile
