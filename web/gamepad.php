@@ -18,7 +18,7 @@ $read = current($rulesets)["read"];
 
 ?>
 <!DOCTYPE html>
-<html lang="de" dir="ltr" charset="utf-8">
+<html lang="de" dir="ltr" charset="utf-8" manifest="patience.appcache">
 <head>
 <meta charset="UTF-8">
 <title>Patience</title>

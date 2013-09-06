@@ -40,6 +40,7 @@ $(pngs) : $(carddir)/%.png: $(cardsrc)/%.svg | $(carddir)
 	rsvg-convert -o $@ -w 200 $<
 
 cards: $(pngs)
+	sed -i'~' -e's/^#.*/# '"`date --rfc-3339=seconds`"'/' web/patience.appcache
 
 $(carddir) : 
 	mkdir $(carddir)
