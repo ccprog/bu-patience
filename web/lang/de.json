@@ -1,0 +1,11 @@
+{
+  "prev": { "target": "title", "text": "Rückgängig" },
+  "next": { "target": "title", "text": "Wiederholen" },
+  "help": { "target": "title", "text": "Regeln (eigenes Fenster)" },
+  "newgame": { "target": "title", "text": "Neues Spiel" },
+  "language": { "target": "title", "text": "Sprache" },
+  "remaining": { "target": "text", "text": "Rest:" },
+  "moves": { "target": "text", "text": "Züge:" },
+  "points": { "target": "text", "text": "Punkte:" },
+  "time": { "target": "text", "text": "Zeit:" }
+}

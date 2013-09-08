@@ -1,0 +1,11 @@
+{
+  "prev": { "target": "title", "text": "Undo" },
+  "next": { "target": "title", "text": "Redo" },
+  "help": { "target": "title", "text": "Rules (own window)" },
+  "newgame": { "target": "title", "text": "New game" },
+  "language": { "target": "title", "text": "Language" },
+  "remaining": { "target": "text", "text": "Tail:" },
+  "moves": { "target": "text", "text": "Moves:" },
+  "points": { "target": "text", "text": "Score:" },
+  "time": { "target": "text", "text": "Time:" }
+}

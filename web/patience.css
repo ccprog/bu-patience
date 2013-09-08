@@ -65,8 +65,12 @@ button, select, input {
   margin:0.5em 0.2em;
   font-size:1em;
 }
-select {
+select#ruleset {
   width:10em;
+}
+select#language {
+  font-size:0.75em;
+  width:4em;
 }
 span.info {
   display:inline-block;
@@ -74,7 +78,7 @@ span.info {
   margin:0.5em 0.2em;
   padding: 0.1em 0.3em;
   background-color:#a0c9a8;
-  width:7em; 
+  width:7.5em; 
 }
 span.win {
   background-color:white;
