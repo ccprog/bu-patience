@@ -1808,7 +1808,7 @@ Timer = (function() {
 })();
 
 Area = (function() {
-  var addr, is_over, on_ruleset, raster, remove_flashing, resize_timeout, set_flashing, to_view;
+  var addr, is_over, on_xhr, raster, remove_flashing, resize_timeout, set_flashing, to_view;
 
   addr = ["cards/card_", ".png"];
 
@@ -1873,59 +1873,106 @@ Area = (function() {
     return d.flashing = false;
   };
 
-  on_ruleset = function(ruleset) {
-    var _this = this;
-    d3.select("title").text("Patience: " + ruleset.title);
-    d3.select("#newgame").on("click", function() {
-      return _this.new_game(ruleset);
-    });
-    this.infos.filter("#help").on("click", function() {
-      if ((this.help_window == null) || this.help_window.closed) {
-        return this.help_window = window.open(ruleset.help);
-      } else {
-        return this.help_window.location = ruleset.help;
+  on_xhr = {
+    ruleset: function(ruleset) {
+      var _this = this;
+      d3.select("title").text("Patience: " + ruleset.title);
+      d3.select("#newgame").on("click", function() {
+        return _this.new_game(ruleset);
+      });
+      this.infos.filter("#help").on("click", function() {
+        if ((this.help_window == null) || this.help_window.closed) {
+          return this.help_window = window.open(ruleset.help);
+        } else {
+          return this.help_window.location = ruleset.help;
+        }
+      });
+      return this.new_game(ruleset);
+    },
+    language: function(strings) {
+      var el, entry, info, key, _results;
+      _results = [];
+      for (key in strings) {
+        entry = strings[key];
+        el = d3.select("#" + key);
+        switch (entry.target) {
+          case "title":
+            _results.push(el.attr("title", entry.text));
+            break;
+          case "text":
+            info = el.select(".data").node();
+            _results.push(el.text(entry.text).append(function() {
+              return info;
+            }));
+            break;
+          default:
+            _results.push(void 0);
+        }
       }
-    });
-    return this.new_game(ruleset);
+      return _results;
+    }
   };
 
   resize_timeout = null;
 
   function Area(pad, infos, standard_url) {
-    var rs_url, sheet,
+    var item, sheet, _fn, _i, _len, _ref,
       _this = this;
     this.pad = pad;
     this.infos = infos;
     sheet = d3.select("head").append("style").property("sheet");
     sheet.insertRule("img {}", 0);
     this.rule = sheet.cssRules[0];
-    try {
-      rs_url = localStorage.getItem("ruleset");
-    } catch (e) {
-      rs_url = standard_url;
+    this.selector = {};
+    _ref = ["language", "ruleset"];
+    _fn = function(item) {
+      var lang, url, _ref1, _ref2;
+      try {
+        url = localStorage.getItem(item);
+      } catch (e) {
+
+      }
+      _this.selector[item] = d3.select("select#" + item);
+      if (url == null) {
+        if (item === "language") {
+          lang = (_ref1 = (_ref2 = navigator.language) != null ? _ref2 : navigator.userLanguage) != null ? _ref1 : "en";
+          if (_this.selector[item].select('option[value="lang/#{lang}.json"]').empty()) {
+            lang = "en";
+          }
+          url = "lang/" + lang.substring(0, 2) + ".json";
+        } else {
+          url = standard_url;
+        }
+      }
+      _this.selector[item].property("value", url).on("change", function() {
+        url = _this.selector[item].property("value");
+        return _this.change(item, url);
+      });
+      return _this.change(item, url);
+    };
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      item = _ref[_i];
+      _fn(item);
     }
-    if (!rs_url) {
-      rs_url = standard_url;
-    }
-    this.selector = d3.select("select#ruleset").property("value", rs_url).on("change", function() {
-      rs_url = _this.selector.property("value");
-      return _this.change_game(rs_url);
-    });
-    this.change_game(rs_url);
   }
 
-  Area.prototype.change_game = function(rs_url) {
+  Area.prototype.change = function(item, url) {
     var _this = this;
     try {
-      localStorage.setItem("ruleset", rs_url);
+      localStorage.setItem(item, url);
     } catch (e) {
 
     }
-    return d3.json(rs_url, function(e, ruleset) {
+    return d3.json(url, function(e, obj) {
+      var lang;
       if (e) {
-        throw new Error("no ruleset received\n" + e.message);
+        throw new Error(("no " + item + " received\n") + e.message);
       } else {
-        return on_ruleset.call(_this, ruleset);
+        if (item === "language") {
+          lang = url.match(/\/(.*)\.json$/)[1];
+          d3.select("html").attr("lang", lang);
+        }
+        return on_xhr[item].call(_this, obj);
       }
     });
   };

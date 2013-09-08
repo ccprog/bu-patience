@@ -54,52 +54,76 @@ class Area
             d3.select(this).style "z-index", null
         d.flashing = false
 
-    # callback on receiving a new ruleset by xhr
-    # sets informations and inits a new Game object
-    on_ruleset = (ruleset) ->
-        d3.select("title").text("Patience: " + ruleset.title)
-        d3.select("#newgame").on "click", () =>
-            @new_game ruleset
-        @infos.filter("#help").on "click", () ->
-            if not @help_window? or @help_window.closed
-                @help_window = window.open ruleset.help
-            else
-                @help_window.location = ruleset.help
-         @new_game ruleset
+    # callbacks on receiving new json objects by xhr
+    on_xhr =
+        # sets informations and inits a new Game object
+        ruleset: (ruleset) ->
+            d3.select("title").text("Patience: " + ruleset.title)
+            d3.select("#newgame").on "click", () =>
+                @new_game ruleset
+            @infos.filter("#help").on "click", () ->
+                if not @help_window? or @help_window.closed
+                    @help_window = window.open ruleset.help
+                else
+                    @help_window.location = ruleset.help
+             @new_game ruleset
+
+        # changes language-specific controls strings
+        language: (strings) ->
+            for key, entry of strings
+                el = d3.select("#" + key)
+                switch entry.target
+                    when "title"
+                        el.attr "title", entry.text
+                    when "text"
+                        info = el.select(".data").node()
+                        el.text(entry.text).append () -> info
 
     resize_timeout = null
 
-    # preparatory: insert dynamic style rule, identify initial ruleset and load it
+    # preparatory: insert dynamic style rule, identify UI language and load strings,
+    # identify initial ruleset and load it
     constructor: (@pad, @infos, standard_url) ->
         sheet = d3.select("head").append("style").property("sheet")
         sheet.insertRule "img {}", 0
         @rule = sheet.cssRules[0]
 
-        try
-            rs_url = localStorage.getItem("ruleset")
-        catch e
-            rs_url = standard_url
-        if not rs_url
-            rs_url = standard_url
-        @selector = d3.select("select#ruleset")
-            .property("value", rs_url)
-            .on("change", () =>
-                rs_url = @selector.property "value"
-                @change_game(rs_url)
-            )
-        @change_game(rs_url)
+        @selector = {}
+        for item in [ "language", "ruleset" ]
+            do (item) =>
+                try
+                    url = localStorage.getItem item
+                catch e
+                @selector[item] = d3.select("select#" + item)
+                if not url?
+                    if item is "language"
+                        lang = navigator.language ? navigator.userLanguage ? "en"
+                        if @selector[item].select('option[value="lang/#{lang}.json"]').empty()
+                            lang = "en"
+                        url = "lang/" + lang.substring(0, 2) + ".json"
+                    else
+                        url = standard_url
+                @selector[item].property("value", url)
+                    .on("change", () =>
+                        url = @selector[item].property "value"
+                        @change(item, url)
+                    )
+                @change item, url
 
-    # load a ruleset and store its name persistently
-    change_game: (rs_url) ->
+    # load a json object and store its name persistently
+    change: (item, url) ->
         try
-            localStorage.setItem "ruleset", rs_url
+            localStorage.setItem item, url
         catch e
 
-        d3.json(rs_url, (e, ruleset) =>
+        d3.json(url, (e, obj) =>
             if e
-                throw new Error "no ruleset received\n" + e.message
+                throw new Error "no #{item} received\n" + e.message
             else
-                on_ruleset.call @, ruleset
+                if item is "language"
+                    lang = url.match(/\/(.*)\.json$/)[1]
+                    d3.select("html").attr("lang", lang)
+                on_xhr[item].call @, obj
         )
 
     # exchange the Game object

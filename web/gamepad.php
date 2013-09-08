@@ -16,9 +16,20 @@ $rs = key($rulesets);
 $file = current($rulesets)["file"];
 $read = current($rulesets)["read"];
 
+$dir = "lang";
+$files = scandir($dir);
+$languages = array();
+foreach($files as $entry) {
+    if (preg_match('/(.*)\\.json$/', $entry, $match)) {
+        $languages[$match[1]] =  $dir . "/" . $entry;
+    }
+}
+
+$lg = "en";
+
 ?>
 <!DOCTYPE html>
-<html lang="de" dir="ltr" charset="utf-8" manifest="patience.appcache">
+<html dir="ltr" charset="utf-8" manifest="patience.appcache">
 <head>
 <meta charset="UTF-8">
 <title>Patience</title>
@@ -29,8 +40,8 @@ $read = current($rulesets)["read"];
 <body onload="init('<?php echo $file ?>')">
   <div id="page">
   <div id="controls">
-    <button id="prev" title="Rückgängig">&#8592;</button>
-    <button id="next" title="Wiederholen">&#8594;</button>
+    <button id="prev" title="Undo">&#8592;</button>
+    <button id="next" title="Redo">&#8594;</button>
     <select id="ruleset">
 <?php
 foreach($rulesets as $key => $value) {
@@ -40,12 +51,21 @@ foreach($rulesets as $key => $value) {
 <?php 
 } ?>
     </select>
-    <span id="help" class="info" title="Regeln (eigenes Fenster)" style="">?</span>
-    <button id="newgame" title="Neues Spiel">&#8634;</button>
-    <span id="remaining" class="info">Rest:<span class="data">0</span></span>
-    <span id="moves" class="info">Züge:<span class="data">0</span></span>
-    <span id="points" class="info">Punkte:<span class="data"></span></span>
-    <span id="time" class="info">Zeit:<span class="data"></span></span>
+    <span id="help" class="info" title="Rules (own window)">?</span>
+    <button id="newgame" title="New game">&#8634;</button>
+    <span id="remaining" class="info">Tail:<span class="data">0</span></span>
+    <span id="moves" class="info">Moves:<span class="data">0</span></span>
+    <span id="points" class="info">Score:<span class="data"></span></span>
+    <span id="time" class="info">Time:<span class="data"></span></span>
+    <select id="language" title="Language">
+<?php
+foreach($languages as $key => $value) {
+?>
+        <option <?php if($key == $rs) echo 'selected="selected" '; 
+        ?>value="<?php echo $value; ?>"><?php echo $key; ?></option>
+<?php 
+} ?>
+    </select>
   </div>
   <div id="area">
   </div>
