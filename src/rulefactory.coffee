@@ -30,7 +30,6 @@ base =
             array[i] = t
         array
 # output-end rulefactory
-# output-start validate
 
 ## A number of name lists are reused in the validation of rulesets, so these are doubled up
 ## for schema objects
