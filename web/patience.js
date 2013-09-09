@@ -22,7 +22,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-var Area, Card, Cell, Foundation, Game, Pile, Reserve, Step, Stock, Tableau, Timer, Waste, base, init, rulefactory,
+var Area, Card, Cell, Foundation, Game, Pile, Reserve, Step, Stock, Tableau, Timer, Waste, base, rulefactory,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   _this = this;
@@ -2018,7 +2018,11 @@ Area = (function() {
   };
 
   Area.prototype.resize = function() {
-    var stack, _i, _len, _ref, _results;
+    var height, stack, _i, _len, _ref, _results;
+    if (d3.select("#page").style("display") === "block") {
+      height = d3.select("#page").property("clientHeight") - this.pad.property("offsetTop");
+      this.pad.style("height", height + "px");
+    }
     this.scale = Math.min(this.pad.property("clientWidth") / this.width, this.pad.property("clientHeight") / this.height);
     this.rule.style.width = Math.round(101 * this.scale) + "px";
     this.rule.style.height = Math.round(156 * this.scale) + "px";
@@ -2089,6 +2093,7 @@ Area = (function() {
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           pre = _ref[_i];
+          hg.style(pre + "transform", null);
           _results.push(hg.style(pre + "transform", "translate(" + d.x + "px," + d.y + "px)"));
         }
         return _results;
@@ -2166,10 +2171,3 @@ Area = (function() {
   return Area;
 
 })();
-
-init = function(standard_url) {
-  var area, infos, pad;
-  pad = d3.select("#area");
-  infos = d3.selectAll(".info");
-  return area = new Area(pad, infos, standard_url);
-};

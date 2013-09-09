@@ -37,15 +37,19 @@ div#controls {
   flex: 0 0 auto;
 }
 div#area {
-  display: table;
-  height: 100%;
-  width: 100%;
   -webkit-box-flex: 1;
   -moz-box-flex: 1;
   -webkit-flex: 1 1 auto;
    -ms-flex: 1 1 auto;
   flex: 1 1 auto;
   position: relative;
+}
+div#notice {
+  display:none;
+  border: 1px solid red;
+  background-color: white;
+  margin: 1em;
+  padding: 1em;
 }
 .stack{
   position:absolute;
@@ -64,6 +68,9 @@ img {
 button, select, input {
   margin:0.5em 0.2em;
   font-size:1em;
+}
+button {
+  font-weight:bold;
 }
 select#ruleset {
   width:10em;

@@ -159,6 +159,9 @@ class Area
 
     # set stack positions and card sizes so that the game fits into the pad
     resize: ->
+        if d3.select("#page").style("display") is "block"
+            height = d3.select("#page").property("clientHeight") - @pad.property("offsetTop")
+            @pad.style("height", height + "px")
         @scale = Math.min @pad.property("clientWidth")/ @width, @pad.property("clientHeight")/ @height
         @rule.style.width = Math.round(101*@scale) + "px"
         @rule.style.height = Math.round(156*@scale) + "px"
@@ -215,6 +218,7 @@ class Area
                     d.x = d3.event.x
                     d.y = d3.event.y
                     for pre in [ "-moz-", "-webkit-", "" ]
+                        hg.style(pre + "transform", null) # IE9 quirk
                         hg.style(pre + "transform", "translate(#{d.x}px,#{d.y}px)")
             ).on("dragend", (d, i) =>
                 if can_drag
@@ -274,10 +278,4 @@ class Area
     # mark appropriate info spans on a game win
     highlight_win: () ->
         @infos.filter("#time, #points").classed "win", true
-
-# entry point
-init = (standard_url) ->
-    pad = d3.select("#area")
-    infos = d3.selectAll(".info")
-    area = new Area pad, infos, standard_url
 

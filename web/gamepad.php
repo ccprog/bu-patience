@@ -37,7 +37,7 @@ $lg = "en";
   <script type="application/ecmascript" src="patience.js" ></script>
   <link rel="stylesheet" type="text/css" href="patience.css" />
 </head>
-<body onload="init('<?php echo $file ?>')">
+<body data-standard="<?php echo $file ?>">
   <div id="page">
   <div id="controls">
     <button id="prev" title="Undo">&#8592;</button>
@@ -67,8 +67,27 @@ foreach($languages as $key => $value) {
 } ?>
     </select>
   </div>
+  <div id="notice">
+    <h2>Sorry, your browser is too old for this game</h2>
+    <p>Please use a modern browser. This game is tested to work with:</p>
+    <ul><li>Internet Explorer 9 and newer (not available for Windows XP)</li>
+    <li>Chrome 5 and newer</li>
+    <li>Firefox 4 and newer</li>
+    <li>Safari 5 and newer</li>
+    <li>Opera 11.6 and newer</li></ul>
+  </div>
   <div id="area">
   </div>
   </div>
+  <script>
+try {
+    var pad = d3.select("#area");
+    var infos = d3.selectAll(".info");
+    var standard = d3.select("body").attr("data-standard");
+    var area = new Area(pad, infos, standard);
+} catch (e) {
+    document.getElementById("notice").setAttribute("style", "display:block;");
+}
+  </script>
 </body>
 </html>
