@@ -35,14 +35,17 @@ $lg = "en";
 <title>Patience</title>
   <script type="application/ecmascript" charset="utf-8" src="lib/d3.v3.js" ></script>
   <script type="application/ecmascript" src="patience.js" ></script>
+  <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.css" />
   <link rel="stylesheet" type="text/css" href="patience.css" />
 </head>
 <body data-standard="<?php echo $file ?>">
   <div id="page">
-  <div id="controls">
-    <button id="prev" title="Undo">&#8592;</button>
-    <button id="next" title="Redo">&#8594;</button>
-    <select id="ruleset">
+  <div id="controls" class="">
+    <span class="btn-group">
+    <button id="prev" class="btn btn-default glyphicon glyphicon-arrow-left" title="Undo"></button>
+    <button id="next" class="btn btn-default glyphicon glyphicon-arrow-right" title="Redo"></button>
+    </span>
+    <select id="ruleset" class="form-control">
 <?php
 foreach($rulesets as $key => $value) {
 ?>
@@ -52,12 +55,12 @@ foreach($rulesets as $key => $value) {
 } ?>
     </select>
     <span id="help" class="info" title="Rules (own window)">?</span>
-    <button id="newgame" title="New game">&#8634;</button>
+    <button id="newgame" class="btn btn-default glyphicon glyphicon-repeat" title="New game"></button>
     <span id="remaining" class="info">Tail:<span class="data">0</span></span>
     <span id="moves" class="info">Moves:<span class="data">0</span></span>
     <span id="points" class="info">Score:<span class="data"></span></span>
     <span id="time" class="info">Time:<span class="data"></span></span>
-    <select id="language" title="Language">
+    <select id="language" class="form-control input-sm" title="Language">
 <?php
 foreach($languages as $key => $value) {
 ?>

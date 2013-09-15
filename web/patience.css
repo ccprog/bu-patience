@@ -29,7 +29,7 @@ body {
 }
 div#controls {
   margin: 1em;
-  font-size: 1.15em;
+  font-size: 14px;
   -webkit-box-flex: 0;
   -moz-box-flex: 0;
   -webkit-flex: 0 0 auto;
@@ -49,7 +49,7 @@ div#notice {
   border: 1px solid red;
   background-color: white;
   margin: 1em;
-  padding: 1em;
+  padding: 0 1em 1em 1em;
 }
 .stack{
   position:absolute;
@@ -65,27 +65,40 @@ img {
   -webkit-user-select: none;
   -ms-user-select: none;
 }
-button, select, input {
-  margin:0.5em 0.2em;
-  font-size:1em;
+button.btn, select, input {
+  margin:7px 3px;
 }
-button {
-  font-weight:bold;
+.btn, select {
+    position: relative;
+    top: -1px;
+}
+.form-control {
+  display: inline-block;
+  height: 28px;
+  padding: 4px 8px;
+  -moz-padding-start: 3px;
+}
+select.input-sm {
+  height: 22px;
+  padding: 2px 6px;
+  -moz-padding-start: 1px;
 }
 select#ruleset {
-  width:10em;
+  width:160px;
 }
 select#language {
-  font-size:0.75em;
-  width:4em;
+  width:60px;
 }
+
 span.info {
   display:inline-block;
   position:relative;
-  margin:0.5em 0.2em;
-  padding: 0.1em 0.3em;
+  margin:7px 3px;
+  padding: 4px 8px;
+  line-height: 20px;
   background-color:#a0c9a8;
-  width:7.5em; 
+  width:120px;
+  border-radius: 4px 4px 4px 4px;
 }
 span.win {
   background-color:white;
@@ -93,7 +106,7 @@ span.win {
 span.data {
   position:absolute;
   right:0;
-  padding-right:0.3em;
+  padding-right:8px;
 }
 #help {
     width:auto;

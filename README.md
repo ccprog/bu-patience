@@ -12,6 +12,7 @@ A HTML5 browser game coded in Coffeescript, aimed at implementing a number of pa
 - Positioning and dragging of cards is realised with [CSS Transforms](http://www.w3.org/TR/css3-transforms)
 - Gamepad layout uses [CSS flexbox](http://www.w3.org/TR/css3-flexbox), but also sets sizes programmatically
   as a fallback
+- The controls use [Twitter Bootstrap 3.0](http://getbootstrap.com) and [Glyphicons](http://glyphicons.com/)
 
 ## Rulesets
 
