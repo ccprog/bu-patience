@@ -2,6 +2,8 @@
 
 A HTML5 browser game coded in Coffeescript, aimed at implementing a number of patience card games.
 
+**Play here:** [Gamepad](http://browser-unplugged.net/games/patience/gamepad.php)
+
 - [Web Storage API](http://www.whatwg.org/specs/web-apps/current-work/multipage/webstorage.html)
   is used to record the name of the last game played
 - [Application cache](http://www.whatwg.org/specs/web-apps/current-work/multipage/offline.html#appcache)
