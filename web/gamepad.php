@@ -13,8 +13,9 @@ foreach($files as $entry) {
 }
 
 $rs = key($rulesets);
-$file = current($rulesets)["file"];
-$read = current($rulesets)["read"];
+$curr = current($rulesets);
+$file = $curr["file"];
+$read = $curr["read"];
 
 $dir = "lang";
 $files = scandir($dir);
