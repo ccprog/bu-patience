@@ -112,7 +112,7 @@ Pile = (function() {
   Pile.prototype.show_withdraw = function(number) {
     var begin, end;
     end = this.marked_indexes();
-    this.marked_withdraw += Math.min(number, this.total_length());
+    this.marked_withdraw += Math.min(number, this.total_length() - this.marked_withdraw);
     begin = this.marked_indexes();
     return this.facedown_cards.slice(begin[0], end[0]).reverse().concat(this.faceup_cards.slice(begin[1], end[1]));
   };

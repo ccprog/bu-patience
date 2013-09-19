@@ -68,7 +68,7 @@ class Pile
     # note the effective card removal count in @marked_withdraw
     show_withdraw: (number) ->
         end = @marked_indexes()
-        @marked_withdraw += Math.min(number, @total_length())
+        @marked_withdraw += Math.min(number, @total_length() - @marked_withdraw)
         begin = @marked_indexes()
         @facedown_cards.slice(begin[0], end[0]).reverse().concat @faceup_cards.slice(begin[1], end[1])
 
