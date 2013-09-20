@@ -4,13 +4,13 @@
   "type": "object",
   "properties": {
     "new": {
-      "$ref": "#/definitions/point_count"
+      "$ref": "#/definitions/point_model"
     },
     "old": {
-      "$ref": "#/definitions/point_count"
+      "$ref": "#/definitions/point_model"
     },
     "both": {
-      "$ref": "#/definitions/point_count"
+      "$ref": "#/definitions/point_model"
     }
   },
   "oneOf": [
@@ -29,6 +29,19 @@
     }
   ],
   "definitions": {
+    "point_model": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/point_count"
+          }
+        },
+        {
+          "$ref": "#/definitions/point_count"
+        }
+      ]
+    },
     "point_count": {
       "type": "object",
       "additionalProperties": false,

@@ -753,7 +753,7 @@ base = {
 };
 
 rulefactory = (function() {
-  var card_extract, card_pair_test, card_pair_test_list, card_prop, card_selection, card_selection_list, card_sequence_count, card_test, card_test_list, compare, do_swap, evaluator, mover, numeric_card_prop_names, numeric_card_props, numeric_pile_prop_names, numeric_pile_props, operator, pair_count, part_selection, part_selection_list, pile_card_count, pile_card_prop, pile_pair_test, pile_pair_test_list, pile_prop, pile_role_names, pile_selection, pile_selection_list, pile_sequence_count, pile_test, pile_test_list, point_count, position, priority_pile, priority_sequence, range, role_list, sequence_extract, sequence_position_extract, single_card, single_pile, single_role, string_card_props, string_pile_props;
+  var card_extract, card_pair_test, card_pair_test_list, card_prop, card_selection, card_selection_list, card_sequence_count, card_test, card_test_list, compare, do_swap, evaluator, mover, numeric_card_prop_names, numeric_card_props, numeric_pile_prop_names, numeric_pile_props, operator, pair_count, part_selection, part_selection_list, pile_card_count, pile_card_prop, pile_pair_test, pile_pair_test_list, pile_prop, pile_role_names, pile_selection, pile_selection_list, pile_sequence_count, pile_test, pile_test_list, point_count, point_model, position, priority_pile, priority_sequence, range, role_list, sequence_extract, sequence_position_extract, single_card, single_pile, single_role, string_card_props, string_pile_props;
   compare = {
     "==": function(val1, val2) {
       return val1 === val2;
@@ -1476,6 +1476,19 @@ rulefactory = (function() {
       return _results;
     }
   };
+  point_model = function(rule, self, other, piles) {
+    var entry, points, _i, _len;
+    if (Array.isArray(rule)) {
+      points = 0;
+      for (_i = 0, _len = rule.length; _i < _len; _i++) {
+        entry = rule[_i];
+        points += point_count(entry, self, other, piles);
+      }
+      return points;
+    } else {
+      return point_count(rule, self, other, piles);
+    }
+  };
   point_count = function(rule, self, other, piles) {
     var card, count, pile, selected, _i, _j, _len, _len1;
     if (rule.fixed != null) {
@@ -1527,7 +1540,7 @@ rulefactory = (function() {
       if ((rule[timing] == null) && (rule.both == null)) {
         return 0;
       }
-      return point_count((_ref = rule[timing]) != null ? _ref : rule.both, pile, null, piles);
+      return point_model((_ref = rule[timing]) != null ? _ref : rule.both, pile, null, piles);
     },
     related: function(rule, pile, piles) {
       return pile_selection_list(rule, pile, null, piles);

@@ -1331,44 +1331,69 @@ action_schema_definitions.shuffle =
     }
 # output-end rulefactory
 
+## point model returns a number
+## it can consist of one point count rule given as an object, or an array of point count rules
+## in this case, the result of each rule is added up
+
+# output-start validate
+point_schema_definitions = {}
+
+point_schema_definitions.point_model =
+    oneOf: [
+        type: "array"
+        items: { $ref: "#/definitions/point_count" }
+    ,
+        $ref: "#/definitions/point_count"
+    ]
+# output-end validate
+# output-start rulefactory
+    point_model = (rule, self, other, piles) ->
+        if Array.isArray(rule)
+            points = 0
+            for entry in rule
+                points += point_count entry, self, other, piles
+            points
+        else
+            point_count rule, self, other, piles
+# output-end rulefactory
+
 ## point count returns a number evaluating one pile
 ## point rules are executed for each pile, but can evaluate multiple piles in correlation
 ## dir: if the final is the result of a computation, describe the sequence of operands:
 ##      recto: count left in operation and value right, verso: count right
 
 # output-start validate
-point_schema_definitions =
-    point_count:
-        type: "object"
-        additionalProperties: false
-        properties:
-            fixed:
-                type: "integer"
-            piles: { $ref: "http://patience.intern/rulesets/lib_schema#/definitions/pile_selection_list" }
-            cards: { $ref: "http://patience.intern/rulesets/lib_schema#/definitions/sequence_extract" }
-            operator: { $ref: "http://patience.intern/rulesets/lib_schema#/definitions/operator" }
-            dir: lib_direction
-            evaluate: {}
-            value: {}
-        oneof: [
-            { required: [ "fixed" ] },
-            { required: [ "piles" ] },
-            { required: [ "cards" ] }
-        ]
-        dependencies:
-            piles:
-                properties:
-                    evaluate:
-                        enum: names.numeric_pile_prop.concat [ "length" ]
-                        default: "length"
-                    value: { $ref: "http://patience.intern/rulesets/lib_schema#/definitions/pile_compute" }
-            cards:
-                properties:
-                    evaluate:
-                        enum: names.numeric_card_prop.concat ["length"]
-                        default: "length"
-                    value: { $ref: "http://patience.intern/rulesets/lib_schema#/definitions/card_compute" }
-            operator: [ "value" ]
+point_schema_definitions.point_count =
+    type: "object"
+    additionalProperties: false
+    properties:
+        fixed:
+            type: "integer"
+        piles: { $ref: "http://patience.intern/rulesets/lib_schema#/definitions/pile_selection_list" }
+        cards: { $ref: "http://patience.intern/rulesets/lib_schema#/definitions/sequence_extract" }
+        operator: { $ref: "http://patience.intern/rulesets/lib_schema#/definitions/operator" }
+        dir: lib_direction
+        evaluate: {}
+        value: {}
+    oneof: [
+        { required: [ "fixed" ] },
+        { required: [ "piles" ] },
+        { required: [ "cards" ] }
+    ]
+    dependencies:
+        piles:
+            properties:
+                evaluate:
+                    enum: names.numeric_pile_prop.concat [ "length" ]
+                    default: "length"
+                value: { $ref: "http://patience.intern/rulesets/lib_schema#/definitions/pile_compute" }
+        cards:
+            properties:
+                evaluate:
+                    enum: names.numeric_card_prop.concat ["length"]
+                    default: "length"
+                value: { $ref: "http://patience.intern/rulesets/lib_schema#/definitions/card_compute" }
+        operator: [ "value" ]
 # output-end validate
 # output-start rulefactory
     point_count = (rule, self, other, piles) ->
@@ -1601,9 +1626,9 @@ point_schema =
     id: "http://patience.intern/rulesets/point_schema#"
     type: "object"
     properties:
-        new: { $ref: "#/definitions/point_count" }
-        old: { $ref: "#/definitions/point_count" }
-        both: { $ref: "#/definitions/point_count" }
+        new: { $ref: "#/definitions/point_model" }
+        old: { $ref: "#/definitions/point_model" }
+        both: { $ref: "#/definitions/point_model" }
     oneOf: [
         required: [ "new", "old" ]
         maxProperties: 2
@@ -1616,7 +1641,7 @@ point_schema =
 # output-start rulefactory
         points: (rule, timing, pile, piles) ->
             if not rule[timing]? and not rule.both? then return 0
-            point_count(rule[timing] ? rule.both, pile, null, piles)
+            point_model(rule[timing] ? rule.both, pile, null, piles)
 # output-end rulefactory
 
 ## return a list of piles used as targets for a click action or sources for an autofill action
