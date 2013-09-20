@@ -516,6 +516,7 @@ lib_schema.definitions.pile_card_prop =
     pile_card_prop = (sel, pile, piles) ->
         cards = part_selection_list sel.parts, pile
         card = single_card sel.card, cards
+        if not card? then return null
         card_prop sel.prop, card
 # output-end rulefactory
 
@@ -873,6 +874,7 @@ lib_schema.definitions.card_extract =
             card_list = single_role sel.role, cards, self, other
         else
             pile = single_pile sel.pile, self, other, piles
+            if not pile? then return null
             card_list = part_selection_list sel.parts, pile
         single_card sel.card, card_list
 # output-end rulefactory

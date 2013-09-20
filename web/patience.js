@@ -1025,6 +1025,9 @@ rulefactory = (function() {
     var card, cards;
     cards = part_selection_list(sel.parts, pile);
     card = single_card(sel.card, cards);
+    if (card == null) {
+      return null;
+    }
     return card_prop(sel.prop, card);
   };
   pile_card_count = function(sel, pile, piles) {
@@ -1201,6 +1204,9 @@ rulefactory = (function() {
       card_list = single_role(sel.role, cards, self, other);
     } else {
       pile = single_pile(sel.pile, self, other, piles);
+      if (pile == null) {
+        return null;
+      }
       card_list = part_selection_list(sel.parts, pile);
     }
     return single_card(sel.card, card_list);
