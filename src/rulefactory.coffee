@@ -696,8 +696,10 @@ lib_schema.definitions.single_pile =
 ## filter piles by a criterium
 ## range: positional selection
 ## single_tests: selection by a list of pile criteria
-## pairwise_tests: compare two adjoining piles (in ruleset listing order) and select one
-## comparison_tests: compare any two piles and select one
+## pairwise_tests: compare two adjoining piles (in ruleset listing order) and select one respectively
+## comparison_tests comes in two flavors:
+##   if comparator is set: compare all piles to one and select those that fit
+##   else: compare any two piles and select one respectively
 ## dir: recto selects the first, verso the second in ruleset listing order
 
 # output-start validate
@@ -709,6 +711,7 @@ lib_schema.definitions.pile_selection =
         single_tests: { $ref: "#/definitions/pile_test_list" }
         pairwise_tests: { $ref: "#/definitions/pile_pair_test_list" }
         comparison_tests: { $ref: "#/definitions/pile_pair_test_list" }
+        comparator: { $ref: "#/definitions/single_pile" }
         dir: lib_direction
     oneOf: [
         required: [ "range" ]
@@ -724,8 +727,12 @@ lib_schema.definitions.pile_selection =
     ,
         required: [ "comparison_tests" ]
         maxProperties: 2
-        dependencies:
-            dir: [ "comparison_tests" ]
+        not:
+            allOf: [
+                required: [ "comparator" ]
+            ,
+                required: [ "dir" ]
+            ]
     ]
 # output-end validate
 # output-start rulefactory
@@ -737,17 +744,24 @@ lib_schema.definitions.pile_selection =
             for pile in piles
                 if pile_test_list sel.single_tests, pile, self, other, piles
                     list.push pile
-        else if sel.comparison_tests?
-            for p2, i2 in piles[1..]
-                for p1, i1 in piles[0..i2]
-                    if pile_pair_test_list sel.comparison_tests, p1, p2, self, other, piles
-                        pile = if sel.dir is "verso" then p2 else p1
-                        list.push pile
         else if sel.pairwise_tests?
             for p, i in piles[1..]
                 if pile_pair_test_list sel.pairwise_tests, piles[i], p, self, other, piles
                     pile = if sel.dir is "verso" then p else piles[i]
                     list.push pile
+        else if sel.comparison_tests?
+            if sel.comparator?
+                comp = single_pile sel.comparator, self, other, piles
+                if not comp? then return list
+                for pile in piles
+                    if pile_pair_test_list sel.comparison_tests, comp, pile, self, other, piles
+                        list.push pile
+            else
+                for p2, i2 in piles[1..]
+                    for p1, i1 in piles[0..i2]
+                        if pile_pair_test_list sel.comparison_tests, p1, p2, self, other, piles
+                            pile = if sel.dir is "verso" then p2 else p1
+                            list.push pile
         list
 # output-end rulefactory
 

@@ -715,7 +715,15 @@ Foundation = (function(_super) {
     Foundation.__super__.constructor.call(this, game, options, deck);
   }
 
-  Foundation.prototype.on_dblclick = function() {};
+  Foundation.prototype.on_dblclick = function() {
+    var _base, _ref;
+    if ((this.actions.dblclick != null) && (!(((_ref = this.countdown) != null ? _ref.which : void 0) === "dblclick") || this.countdown.number > 0)) {
+      if (typeof (_base = this.actions).dblclick === "function") {
+        _base.dblclick(this, null, this.game.piles);
+      }
+      return this.game.update();
+    }
+  };
 
   return Foundation;
 
@@ -1112,7 +1120,7 @@ rulefactory = (function() {
     }
   };
   pile_selection = function(sel, self, other, piles) {
-    var i, i1, i2, list, p, p1, p2, pile, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
+    var comp, i, i1, i2, list, p, p1, p2, pile, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2;
     list = [];
     if (sel.range != null) {
       return range(sel.range, piles);
@@ -1123,26 +1131,39 @@ rulefactory = (function() {
           list.push(pile);
         }
       }
-    } else if (sel.comparison_tests != null) {
-      _ref = piles.slice(1);
-      for (i2 = _j = 0, _len1 = _ref.length; _j < _len1; i2 = ++_j) {
-        p2 = _ref[i2];
-        _ref1 = piles.slice(0, +i2 + 1 || 9e9);
-        for (i1 = _k = 0, _len2 = _ref1.length; _k < _len2; i1 = ++_k) {
-          p1 = _ref1[i1];
-          if (pile_pair_test_list(sel.comparison_tests, p1, p2, self, other, piles)) {
-            pile = sel.dir === "verso" ? p2 : p1;
-            list.push(pile);
-          }
-        }
-      }
     } else if (sel.pairwise_tests != null) {
-      _ref2 = piles.slice(1);
-      for (i = _l = 0, _len3 = _ref2.length; _l < _len3; i = ++_l) {
-        p = _ref2[i];
+      _ref = piles.slice(1);
+      for (i = _j = 0, _len1 = _ref.length; _j < _len1; i = ++_j) {
+        p = _ref[i];
         if (pile_pair_test_list(sel.pairwise_tests, piles[i], p, self, other, piles)) {
           pile = sel.dir === "verso" ? p : piles[i];
           list.push(pile);
+        }
+      }
+    } else if (sel.comparison_tests != null) {
+      if (sel.comparator != null) {
+        comp = single_pile(sel.comparator, self, other, piles);
+        if (comp == null) {
+          return list;
+        }
+        for (_k = 0, _len2 = piles.length; _k < _len2; _k++) {
+          pile = piles[_k];
+          if (pile_pair_test_list(sel.comparison_tests, comp, pile, self, other, piles)) {
+            list.push(pile);
+          }
+        }
+      } else {
+        _ref1 = piles.slice(1);
+        for (i2 = _l = 0, _len3 = _ref1.length; _l < _len3; i2 = ++_l) {
+          p2 = _ref1[i2];
+          _ref2 = piles.slice(0, +i2 + 1 || 9e9);
+          for (i1 = _m = 0, _len4 = _ref2.length; _m < _len4; i1 = ++_m) {
+            p1 = _ref2[i1];
+            if (pile_pair_test_list(sel.comparison_tests, p1, p2, self, other, piles)) {
+              pile = sel.dir === "verso" ? p2 : p1;
+              list.push(pile);
+            }
+          }
         }
       }
     }
@@ -2056,12 +2077,12 @@ Area = (function() {
       return d3.event.preventDefault();
     });
     stack.inner = stack.outer.append("div").classed("stack", true);
-    if (pile.dblclick_targets != null) {
+    if ((pile.dblclick_targets != null) || (pile.actions.dblclick != null)) {
       stack.inner.on("dblclick", function() {
         return pile.on_dblclick();
       });
     }
-    if (pile.click != null) {
+    if ((pile.click != null) || (pile.actions.click != null)) {
       stack.outer.on("click", function() {
         return pile.on_click();
       });

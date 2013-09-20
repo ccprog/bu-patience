@@ -190,9 +190,9 @@ class Area
             )
         stack.inner = stack.outer.append("div")
             .classed("stack", true)
-        if pile.dblclick_targets?
+        if pile.dblclick_targets? or pile.actions.dblclick?
             stack.inner.on("dblclick", -> pile.on_dblclick())
-        if pile.click?
+        if pile.click? or pile.actions.click?
             stack.outer.on("click", -> pile.on_click())
 
         @stacks.push stack

@@ -468,6 +468,9 @@ class Foundation extends Pile
             options.build_rule = foundation_rule options.fill
         super game, options, deck
 
-    # doubleclick never has any consequences
+    # doubleclick never has targets, but could trigger a custom action
     on_dblclick: ->
+        if @actions.dblclick? and (not (@countdown?.which is "dblclick") or @countdown.number > 0)
+            @actions.dblclick? @, null, @game.piles
+            @game.update()
 

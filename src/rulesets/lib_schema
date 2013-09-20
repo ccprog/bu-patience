@@ -557,6 +557,9 @@
         "comparison_tests": {
           "$ref": "#/definitions/pile_pair_test_list"
         },
+        "comparator": {
+          "$ref": "#/definitions/single_pile"
+        },
         "dir": {
           "enum": [
             "recto",
@@ -594,9 +597,18 @@
             "comparison_tests"
           ],
           "maxProperties": 2,
-          "dependencies": {
-            "dir": [
-              "comparison_tests"
+          "not": {
+            "allOf": [
+              {
+                "required": [
+                  "comparator"
+                ]
+              },
+              {
+                "required": [
+                  "dir"
+                ]
+              }
             ]
           }
         }
