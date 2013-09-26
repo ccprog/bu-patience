@@ -1661,7 +1661,6 @@ Game = (function() {
         size.y = Math.max(size.y, po.position.y + (options.direction === "down" ? options.spread : 1));
         pile = new base.pile_classes[pg.pileclass](this, options, deck);
         pile.position = po.position;
-        advise(this, pile);
         this.piles.push(pile);
       }
     }
@@ -1673,6 +1672,7 @@ Game = (function() {
     _ref8 = this.piles;
     for (_n = 0, _len3 = _ref8.length; _n < _len3; _n++) {
       pile = _ref8[_n];
+      advise(this, pile);
       pile.init_related(this.piles);
       if (!(pile.classname === "Foundation")) {
         pile.dblclick_targets = this.piles.filter(function(p) {

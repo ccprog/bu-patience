@@ -58,7 +58,6 @@ class Game
 
                 pile = new base.pile_classes[pg.pileclass] @, options, deck
                 pile.position = po.position
-                advise @, pile
                 @piles.push pile
 
         if ruleset.deal_action?
@@ -67,6 +66,7 @@ class Game
 
         @area.initialize @, size
         for pile in @piles
+            advise @, pile
             pile.init_related @piles
             if not (pile.classname is "Foundation")
                 pile.dblclick_targets = @piles.filter( (p) ->
