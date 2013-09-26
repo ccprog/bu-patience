@@ -62,6 +62,11 @@ Pile = (function() {
     this.build_rule = function(cards, source) {
       return rulefactory.evaluate(options.build_rule, cards, this, source, this.game.piles);
     };
+    if (options.pairing_rule != null) {
+      this.pairing_rule = function(cards, source) {
+        return rulefactory.evaluate(options.pairing_rule, cards, this, source, this.game.piles);
+      };
+    }
     this.marked_withdraw = 0;
     this.actions = {};
     _ref1 = (_ref = options.action) != null ? _ref : [];
@@ -242,14 +247,24 @@ Pile = (function() {
   };
 
   Pile.prototype.on_build = function(cards, source) {
-    var test, _base, _ref, _ref1;
-    test = (!(((_ref = this.countdown) != null ? _ref.which : void 0) === "build") || this.countdown.number > 0) && this.build_rule(cards, source);
+    var test, _base, _ref, _ref1, _ref2;
+    if ((this.pairing_rule != null) && this.faceup_cards.length >= 1) {
+      this.show_withdraw(1);
+      test = (!(((_ref = this.countdown) != null ? _ref.which : void 0) === "build") || this.countdown.number > 0) && cards.length === 1 && (typeof this.pairing_rule === "function" ? this.pairing_rule(cards, source) : void 0);
+      if (test) {
+        this.exec_withdraw();
+      }
+    } else {
+      test = (!(((_ref1 = this.countdown) != null ? _ref1.which : void 0) === "build") || this.countdown.number > 0) && this.build_rule(cards, source);
+      if (test) {
+        this.exec_add(cards);
+      }
+    }
     if (test) {
-      this.exec_add(cards);
       if (typeof (_base = this.actions).build === "function") {
         _base.build(this, source, this.game.piles);
       }
-      if (((_ref1 = this.countdown) != null ? _ref1.which : void 0) === "build") {
+      if (((_ref2 = this.countdown) != null ? _ref2.which : void 0) === "build") {
         this.countdown.number--;
       }
     }
@@ -295,33 +310,8 @@ Cell = (function(_super) {
   };
 
   function Cell(game, options, deck) {
-    if (options.pairing_rule != null) {
-      this.pairing_rule = function(cards, source) {
-        return rulefactory.evaluate(options.pairing_rule, cards, this, source, this.game.piles);
-      };
-    }
     Cell.__super__.constructor.call(this, game, options, deck);
   }
-
-  Cell.prototype.on_build = function(cards, source) {
-    var test, _base, _ref, _ref1;
-    if ((this.pairing_rule != null) && this.faceup_cards.length === 1) {
-      this.show_withdraw(1);
-      test = (!(((_ref = this.countdown) != null ? _ref.which : void 0) === "build") || this.countdown.number > 0) && cards.length === 1 && (typeof this.pairing_rule === "function" ? this.pairing_rule(cards, source) : void 0);
-      if (test) {
-        this.exec_withdraw();
-        if (typeof (_base = this.actions).build === "function") {
-          _base.build(this, source, this.game.piles);
-        }
-        if (((_ref1 = this.countdown) != null ? _ref1.which : void 0) === "build") {
-          this.countdown.number--;
-        }
-      }
-      return test;
-    } else {
-      return Cell.__super__.on_build.call(this, cards, source);
-    }
-  };
 
   return Cell;
 

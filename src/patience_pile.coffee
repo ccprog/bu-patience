@@ -31,6 +31,9 @@ class Pile
             rulefactory.evaluate options.drag_rule, cards, @, null, @game.piles
         @build_rule = (cards, source) ->
             rulefactory.evaluate options.build_rule, cards, @, source, @game.piles
+        if options.pairing_rule?
+            @pairing_rule = (cards, source) ->
+                rulefactory.evaluate options.pairing_rule, cards, @, source, @game.piles
         @marked_withdraw = 0
         @actions = {}
         for a in options.action ? []
@@ -165,12 +168,21 @@ class Pile
             @cancel_withdraw()
 
     # try to add cards to the pile
-    # test for countdown exhaustion and build evaluation rule
+    # successfull pairing removes the cards from both source and target pile,
+    # else test for countdown exhaustion and build evaluation rule
     # if allowed execute explicit build action
     on_build: (cards, source) ->
-        test = (not (@countdown?.which is "build") or @countdown.number > 0) and @build_rule cards, source
+        if @pairing_rule? and @faceup_cards.length >= 1
+            @show_withdraw(1)
+            test = (not (@countdown?.which is "build") or @countdown.number > 0) and
+                cards.length == 1 and @pairing_rule?(cards, source)
+            if test
+                @exec_withdraw()
+        else
+            test = (not (@countdown?.which is "build") or @countdown.number > 0) and @build_rule cards, source
+            if test
+                @exec_add cards
         if test
-            @exec_add cards
             @actions.build? @, source, @game.piles
             if @countdown?.which is "build"
                 @countdown.number--
@@ -199,25 +211,7 @@ class Cell extends Pile
 
     # for card pairing style games, construct rule function
     constructor: (game, options, deck) ->
-        if options.pairing_rule?
-            @pairing_rule = (cards, source) ->
-                rulefactory.evaluate options.pairing_rule, cards, @, source, @game.piles
         super game, options, deck
-
-    # successfull pairing removes the cards from both source and target pile
-    on_build: (cards, source) ->
-        if @pairing_rule? and @faceup_cards.length == 1
-            @show_withdraw(1)
-            test = (not (@countdown?.which is "build") or @countdown.number > 0) and
-                cards.length == 1 and @pairing_rule?(cards, source)
-            if test
-                @exec_withdraw()
-                @actions.build? @, source, @game.piles
-                if @countdown?.which is "build"
-                    @countdown.number--
-            test
-        else
-            super cards, source
 
 # "Cell" data object model
 class Tableau extends Pile
