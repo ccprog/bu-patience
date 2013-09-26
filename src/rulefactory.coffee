@@ -666,17 +666,26 @@ lib_schema.definitions.pile_pair_test_list =
 # output-start validate
 lib_schema.definitions.single_pile =
     type: "object"
-    maxProperties: 1
     additionalProperties: false
     properties:
         role:
             enum: names.pile_role
         single_tests: { $ref: "#/definitions/pile_test_list" }
         position:{ $ref: "#/definitions/position" }
+        comparison_tests: { $ref: "#/definitions/pile_pair_test_list" }
+        comparator: { $ref: "#/definitions/single_pile" }
     oneOf: [
-        { required: [ "role" ] },
-        { required: [ "single_tests" ] },
-        { required: [ "position" ] }
+        required: [ "role" ]
+        maxProperties: 1
+    ,
+        required: [ "single_tests" ]
+        maxProperties: 1
+    ,
+        required: [ "position" ]
+        maxProperties: 1
+    ,
+        required: [ "comparator", "comparison_tests" ]
+        maxProperties: 2
     ]
 # output-end validate
 # output-start rulefactory
@@ -686,6 +695,11 @@ lib_schema.definitions.single_pile =
             if sel.role is "other" then return other
         if sel.position?
             return position sel.position, piles
+        if sel.comparison_tests?
+            comp = single_pile sel.comparator, self, other, piles
+            for pile in piles
+                if pile_pair_test_list sel.comparison_tests, comp, pile, self, other, piles
+                    return pile
         else
             for pile in piles
                 if pile_test_list sel.single_tests, pile, self, other, piles

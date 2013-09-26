@@ -507,7 +507,6 @@
     },
     "single_pile": {
       "type": "object",
-      "maxProperties": 1,
       "additionalProperties": false,
       "properties": {
         "role": {
@@ -521,23 +520,39 @@
         },
         "position": {
           "$ref": "#/definitions/position"
+        },
+        "comparison_tests": {
+          "$ref": "#/definitions/pile_pair_test_list"
+        },
+        "comparator": {
+          "$ref": "#/definitions/single_pile"
         }
       },
       "oneOf": [
         {
           "required": [
             "role"
-          ]
+          ],
+          "maxProperties": 1
         },
         {
           "required": [
             "single_tests"
-          ]
+          ],
+          "maxProperties": 1
         },
         {
           "required": [
             "position"
-          ]
+          ],
+          "maxProperties": 1
+        },
+        {
+          "required": [
+            "comparator",
+            "comparison_tests"
+          ],
+          "maxProperties": 2
         }
       ]
     },

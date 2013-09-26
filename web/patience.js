@@ -1098,7 +1098,7 @@ rulefactory = (function() {
     return test;
   };
   single_pile = function(sel, self, other, piles) {
-    var pile, _i, _len;
+    var comp, pile, _i, _j, _len, _len1;
     if (sel.role != null) {
       if (sel.role === "self") {
         return self;
@@ -1109,9 +1109,18 @@ rulefactory = (function() {
     }
     if (sel.position != null) {
       return position(sel.position, piles);
-    } else {
+    }
+    if (sel.comparison_tests != null) {
+      comp = single_pile(sel.comparator, self, other, piles);
       for (_i = 0, _len = piles.length; _i < _len; _i++) {
         pile = piles[_i];
+        if (pile_pair_test_list(sel.comparison_tests, comp, pile, self, other, piles)) {
+          return pile;
+        }
+      }
+    } else {
+      for (_j = 0, _len1 = piles.length; _j < _len1; _j++) {
+        pile = piles[_j];
         if (pile_test_list(sel.single_tests, pile, self, other, piles)) {
           return pile;
         }
