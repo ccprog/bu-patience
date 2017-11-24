@@ -94,15 +94,19 @@ link on the gamepad leads to these pages.
 
 ## The card set
 
-As fas as I could find out, the card faces are in the public domain. Picture cards motives
-stem from _The United States Playing Card Company_'s "Bicycle Card" series which has been
-published first in 1885. It seems their design has basically remained unchanged.
+The court card faces are based on the standard english set as designed by
+[Andrew Dougherty](https://plainbacks.com/imagegroups/HochAD1900.html)
+and the [New York Card Company](https://plainbacks.com/imagegroups/HochNY1900.html)
+between ca. 1870 and 1900, and which are variants of what can at least be
+traced back to [John J. Levy in 1850](https://plainbacks.com/imagegroups/HochNY1860.html#I28).
+As differences are truely minor, they must be placed in the public domain. Modern variants
+are sold by _The United States Playing Card Company_ as the "Bee" series.
 
 The joker design comes from a motive in an old folk lore book. I found it
 [here](https://commons.wikimedia.org/wiki/File:DBP_1977_922_Till_Eulenspiegel.jpg). Note that
 the stamp may be not public domain, but the motives it features are.
 
-Number cards and the backface are my own design. I claim no ownership and release their design
+Pips and the backface are my own design. I claim no ownership and release their design
 to the public domain.
 
 ## Installation
@@ -190,4 +194,3 @@ builds these parts:
   [librsvg-bin](https://wiki.gnome.org/LibRsvg)
 - `all` builds all parts
 - `clean` removes `web/patience.js`, `web/rulesets` and `web/cards`
-
