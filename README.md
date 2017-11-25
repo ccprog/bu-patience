@@ -6,8 +6,6 @@ A HTML5 browser game coded in Coffeescript, aimed at implementing a number of pa
 
 - [Web Storage API](http://www.whatwg.org/specs/web-apps/current-work/multipage/webstorage.html)
   is used to record the name of the last game played
-- [Application cache](http://www.whatwg.org/specs/web-apps/current-work/multipage/offline.html#appcache)
-  is used to preload all card faces for fast performance
 - The application page is using the [D3.js](https://github.com/mbostock/d3/wiki) library.
   As the author states, 
   > D3 supports so-called “modern” browsers, which generally means everything except IE8 and below.
@@ -15,6 +13,17 @@ A HTML5 browser game coded in Coffeescript, aimed at implementing a number of pa
 - Gamepad layout uses [CSS flexbox](http://www.w3.org/TR/css3-flexbox), but also sets sizes programmatically
   as a fallback
 - The controls use [Twitter Bootstrap 3.0](http://getbootstrap.com) and [Glyphicons](http://glyphicons.com/)
+
+## Installation and Usage
+
+Copy the contents of the `web/` folder to a webserver file system. PHP is needed.
+
+The game is loaded from the url `gamepad.php`. It takes two `GET` parameters:
+
+- **`ruleset`**: The name of the game to initially load, as displayed in the selection list.
+  Defaults to the last game played.
+- **`language`**: interface language (currently only `en` and `de`). Defaults to the browser
+  default language.
 
 ## Rulesets
 
@@ -109,17 +118,13 @@ the stamp may be not public domain, but the motives it features are.
 Pips and the backface are my own design. I claim no ownership and release their design
 to the public domain.
 
-## Installation
-
-Copy the contents of the `web/` folder to a webserver file system. PHP is needed.
-
 ## Browser compatibility
 
-- IE9+
-- FF4+
-- Chrome 5+
-- Safari5+
-- Opera 11.6+
+- IE11 and Edge
+- FF6+
+- Chrome 8+
+- Safari 6+
+- Opera 12+
 
 ## Developing rulesets
 

@@ -83,7 +83,7 @@ class Area
 
     # preparatory: insert dynamic style rule, identify UI language and load strings,
     # identify initial ruleset and load it
-    constructor: (@pad, @infos, standard_url) ->
+    constructor: (@pad, @infos, presets) ->
         sheet = d3.select("head").append("style").property("sheet")
         sheet.insertRule "img {}", 0
         @rule = sheet.cssRules[0]
@@ -92,7 +92,7 @@ class Area
         for item in [ "language", "ruleset" ]
             do (item) =>
                 try
-                    url = localStorage.getItem item
+                    url = presets[item] ? localStorage.getItem item
                 catch e
                 @selector[item] = d3.select("select#" + item)
                 if not url?
@@ -102,7 +102,7 @@ class Area
                             lang = "en"
                         url = "lang/" + lang.substring(0, 2) + ".json"
                     else
-                        url = standard_url
+                        url = presets.standard
                 @selector[item].property("value", url)
                     .on("change", () =>
                         url = @selector[item].property "value"

@@ -1,36 +1,67 @@
 <?php 
-$dir = "rulesets";
-$files = scandir($dir);
-$rulesets = array();
-foreach($files as $entry) {
-    if (preg_match('/(.*)\\.json$/', $entry, $match)) {
-        $content = file_get_contents($dir . "/" . $entry);
-        $rulesets[$match[1]] = array(
-            "file" => $dir . "/" . $entry,
-            "read" => json_decode($content)->title
-        );
+
+function get_preset ( $param ) {
+    if ( isset($_GET[$param]) ) {
+        $preset = urldecode( $_GET[$param] );
+        $preset = preg_replace( '/_/', ' ', $preset );
+        return strtolower( $preset );
+    } else {
+        return null;
     }
 }
 
-$rs = key($rulesets);
-$curr = current($rulesets);
-$file = $curr["file"];
-$read = $curr["read"];
+$dataset = '';
 
-$dir = "lang";
-$files = scandir($dir);
-$languages = array();
-foreach($files as $entry) {
-    if (preg_match('/(.*)\\.json$/', $entry, $match)) {
-        $languages[$match[1]] =  $dir . "/" . $entry;
+function scan_options ( $dir, $param, $callback ) {
+    global $dataset;
+    $current = null;
+    $preset =  get_preset($param);
+
+    $files = scandir($dir);
+    $items = array();
+    foreach($files as $entry) {
+        if (preg_match('/(.*)\\.json$/', $entry, $match)) {
+            $item = call_user_func( $callback, $dir, $entry, $match[1]);
+            $items[$match[1]] = $item;
+
+            if ( $preset == strtolower($item['read']) ) {
+                $current = $match[1];
+                $dataset .= 'data-' . $param . '="' . $item['file'] . '" ';
+            }
+        }
     }
+
+    if (!$current) {
+        $current = key($items);
+        if ('ruleset' == $param) {
+            $dataset .= 'data-standard="' . $items[$current]['file'] . '" ';
+        }
+    }
+
+    return array(
+        'items' => $items,
+        'selected' => $current
+    );
 }
 
-$lg = "en";
+$rules = scan_options('rulesets', 'ruleset', function ($dir, $entry, $key) {
+    $content = file_get_contents($dir . "/" . $entry);
+    $read = json_decode($content)->title;
+    return array(
+        "file" => $dir . "/" . $entry,
+        "read" => $read
+    );
+});
+$languages = scan_options('lang', 'language', function ($dir, $entry, $key) {
+    return array(
+        "file" => $dir . "/" . $entry,
+        "read" => $key
+    );
+});
 
 ?>
 <!DOCTYPE html>
-<html dir="ltr" charset="utf-8" manifest="patience.appcache">
+<html dir="ltr" charset="utf-8">
 <head>
 <meta charset="UTF-8">
 <title>Patience</title>
@@ -39,7 +70,7 @@ $lg = "en";
   <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.css" />
   <link rel="stylesheet" type="text/css" href="patience.css" />
 </head>
-<body data-standard="<?php echo $file ?>">
+<body <?php echo $dataset ?>>
   <div id="page">
   <div id="controls" class="">
     <span class="btn-group">
@@ -48,9 +79,9 @@ $lg = "en";
     </span>
     <select id="ruleset" class="form-control">
 <?php
-foreach($rulesets as $key => $value) {
+foreach($rules['items'] as $key => $value) {
 ?>
-        <option <?php if($key == $rs) echo 'selected="selected" '; 
+        <option <?php if($key == $rules['selected']) echo 'selected="selected" ';
         ?>value="<?php echo $value['file'] ?>"><?php echo $value["read"]; ?></option>
 <?php 
 } ?>
@@ -63,10 +94,10 @@ foreach($rulesets as $key => $value) {
     <span id="time" class="info">Time:<span class="data"></span></span>
     <select id="language" class="form-control input-sm" title="Language">
 <?php
-foreach($languages as $key => $value) {
+foreach($languages['items'] as $key => $value) {
 ?>
-        <option <?php if($key == $rs) echo 'selected="selected" '; 
-        ?>value="<?php echo $value; ?>"><?php echo $key; ?></option>
+        <option <?php if($key == $languages['selected']) echo 'selected="selected" '; 
+        ?>value="<?php echo $value['file'] ?>"><?php echo $value["read"]; ?></option>
 <?php 
 } ?>
     </select>
@@ -74,11 +105,11 @@ foreach($languages as $key => $value) {
   <div id="notice">
     <h2>Sorry, your browser is too old for this game</h2>
     <p>Please use a modern browser. This game is tested to work with:</p>
-    <ul><li>Internet Explorer 9 and newer (not available for Windows XP)</li>
-    <li>Chrome 5 and newer</li>
-    <li>Firefox 4 and newer</li>
-    <li>Safari 5 and newer</li>
-    <li>Opera 11.6 and newer</li></ul>
+    <ul><li>Internet Explorer 11 and Edge</li>
+    <li>Chrome 8 and newer</li>
+    <li>Firefox 6 and newer</li>
+    <li>Safari 6 and newer</li>
+    <li>Opera 12 and newer</li></ul>
   </div>
   <div id="area">
   </div>
@@ -87,8 +118,8 @@ foreach($languages as $key => $value) {
 try {
     var pad = d3.select("#area");
     var infos = d3.selectAll(".info");
-    var standard = d3.select("body").attr("data-standard");
-    var area = new Area(pad, infos, standard);
+    var presets = d3.select("body").property("dataset");
+    var area = new Area(pad, infos, presets);
 } catch (e) {
     document.getElementById("notice").setAttribute("style", "display:block;");
 }

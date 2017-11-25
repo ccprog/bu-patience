@@ -1,3 +1,4 @@
+node_modules/
 variants/
 src/rulesets/val.coffee
 src/rulesets/_NOTREADY_*
