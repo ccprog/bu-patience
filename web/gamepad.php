@@ -69,6 +69,7 @@ $languages = scan_options('lang', 'language', function ($dir, $entry, $key) {
   <script type="application/ecmascript" src="patience.js" ></script>
   <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.css" />
   <link rel="stylesheet" type="text/css" href="patience.css" />
+  <link rel="preload" as="image" href="cards.svg" />
 </head>
 <body <?php echo $dataset ?>>
   <div id="page">

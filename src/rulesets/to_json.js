@@ -2,7 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var CoffeeScript = require('coffee-script/lib/coffee-script/coffee-script.js');
+var CoffeeScript = require('coffeescript');
 
 process.chdir(path.dirname(process.argv[1]));
 

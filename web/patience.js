@@ -1835,9 +1835,18 @@ Timer = (function() {
 })();
 
 Area = (function() {
-  var addr, is_over, on_xhr, raster, remove_flashing, resize_timeout, set_flashing, to_view;
+  var cards, dim, is_over, on_xhr, raster, remove_flashing, render_cards, resize_timeout, set_flashing, to_view, waiting;
 
-  addr = ["cards/card_", ".png"];
+  dim = {
+    svg: {
+      w: 101,
+      h: 156
+    },
+    png: {
+      w: 200,
+      h: 309
+    }
+  };
 
   raster = {
     x: 110,
@@ -1847,13 +1856,49 @@ Area = (function() {
     fan_y: 26
   };
 
+  cards = {};
+
+  waiting = false;
+
+  render_cards = function() {
+    var ctx, i, insert, suit, value, _i, _len, _ref, _results,
+      _this = this;
+    cards = {};
+    insert = function(x, y, name) {
+      ctx.clearRect(0, 0, dim.png.w, dim.png.h);
+      ctx.drawImage(_this.img, x * dim.svg.w, y * dim.svg.h, dim.svg.w, dim.svg.h, 0, 0, dim.png.w, dim.png.h);
+      cards[name] = _this.canvas.toDataURL("image/png");
+      if (Object.keys(cards).length === 53 && waiting) {
+        _this.new_game(waiting);
+        return waiting = false;
+      }
+    };
+    ctx = this.canvas.getContext('2d');
+    insert(2, 4, "back");
+    insert(3, 4, "empty");
+    _ref = base.suit_names;
+    _results = [];
+    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      suit = _ref[i];
+      _results.push((function() {
+        var _j, _results1;
+        _results1 = [];
+        for (value = _j = 1; _j <= 13; value = ++_j) {
+          _results1.push(insert(value - 1, i, "" + value + "_" + suit));
+        }
+        return _results1;
+      })());
+    }
+    return _results;
+  };
+
   to_view = function(pile) {
     var dl;
     dl = pile.facedown_cards.length;
     return pile.facedown_cards.map(function(card, i) {
       return {
         key: "" + (pile.position.x * 100 + pile.position.y) + "_b_" + i,
-        ref: addr[0] + "back" + addr[1],
+        ref: cards["back"],
         back: true,
         x: 0,
         y: 0
@@ -1861,7 +1906,7 @@ Area = (function() {
     }).concat(pile.faceup_cards.map(function(card, i) {
       return {
         key: "" + (pile.position.x * 100 + pile.position.y) + "_" + card.value + "_" + card.suit + "_" + (i + dl),
-        ref: addr[0] + ("" + card.value + "_" + card.suit) + addr[1],
+        ref: cards["" + card.value + "_" + card.suit],
         back: false,
         x: 0,
         y: 0
@@ -1914,7 +1959,11 @@ Area = (function() {
           return this.help_window.location = ruleset.help;
         }
       });
-      return this.new_game(ruleset);
+      if (Object.keys(cards).length < 53) {
+        return waiting = ruleset;
+      } else {
+        return this.new_game(ruleset);
+      }
     },
     language: function(strings) {
       var el, entry, info, key, _results;
@@ -1950,6 +1999,12 @@ Area = (function() {
     sheet = d3.select("head").append("style").property("sheet");
     sheet.insertRule("img {}", 0);
     this.rule = sheet.cssRules[0];
+    this.canvas = document.createElement('canvas');
+    this.canvas.width = dim.png.w;
+    this.canvas.height = dim.png.h;
+    this.img = new Image();
+    this.img.addEventListener('load', render_cards.bind(this));
+    this.img.src = "cards.svg";
     this.selector = {};
     _ref = ["language", "ruleset"];
     _fn = function(item) {
@@ -2074,7 +2129,7 @@ Area = (function() {
       trans_y: 0
     };
     stack.outer = this.pad.append("div").classed("stack", true).style("top", Math.round(this.scale * stack.y) + "px").style("left", Math.round(this.scale * stack.x) + "px");
-    stack.outer.append("img").attr("src", addr[0] + "empty" + addr[1]).on("dragstart", function() {
+    stack.outer.append("img").attr("src", cards["empty"]).on("dragstart", function() {
       return d3.event.preventDefault();
     });
     stack.inner = stack.outer.append("div").classed("stack", true);

@@ -1,6 +1,8 @@
 # grafical gamepad, view part of the app
 class Area
-    addr = ["cards/card_", ".png"]
+    dim =
+        svg: {w: 101, h: 156}
+        png: {w: 200, h: 309}
     raster =
         x: 110
         y: 165
@@ -8,18 +10,41 @@ class Area
         fan_x: 20
         fan_y: 26
 
+    cards = {}
+    waiting = false
+
+    # render cards from svg to png data url and cache
+    render_cards = () ->
+        cards = {}
+        insert = (x, y, name) =>
+            ctx.clearRect 0, 0, dim.png.w, dim.png.h
+            ctx.drawImage @img,
+                x*dim.svg.w, y*dim.svg.h, dim.svg.w, dim.svg.h,
+                0, 0, dim.png.w, dim.png.h
+            cards[name] = @canvas.toDataURL "image/png"
+            if Object.keys(cards).length == 53 and waiting
+                @new_game waiting
+                waiting = false
+
+        ctx = @canvas.getContext '2d'
+        insert 2, 4, "back"
+        insert 3, 4, "empty"
+        for suit, i in base.suit_names
+            for value in [1..13]
+                insert value-1, i, "#{value}_#{suit}"
+
     # counstruct simplified object for d3 data from pile
     to_view = (pile) ->
         dl = pile.facedown_cards.length
         pile.facedown_cards.map( (card, i) ->
             key: "#{pile.position.x*100 + pile.position.y}_b_#{i}"
-            ref: addr[0] + "back" + addr[1],
+            ref: cards["back"],
             back: true,
             x: 0,
             y: 0
         ).concat(pile.faceup_cards.map (card, i) ->
             key: "#{pile.position.x*100 + pile.position.y}_#{card.value}_#{card.suit}_#{i + dl}"
-            ref: addr[0] + "#{card.value}_#{card.suit}" + addr[1]
+            ref: cards["#{card.value}_#{card.suit}"]
             back: false
             x: 0,
             y: 0
@@ -66,7 +91,10 @@ class Area
                     @help_window = window.open ruleset.help
                 else
                     @help_window.location = ruleset.help
-             @new_game ruleset
+            if Object.keys(cards).length < 53
+                waiting = ruleset
+            else
+                @new_game ruleset
 
         # changes language-specific controls strings
         language: (strings) ->
@@ -81,12 +109,19 @@ class Area
 
     resize_timeout = null
 
-    # preparatory: insert dynamic style rule, identify UI language and load strings,
-    # identify initial ruleset and load it
+    # preparatory: insert dynamic style rule, load cards
+    # identify UI language and load strings, identify initial ruleset and load it
     constructor: (@pad, @infos, presets) ->
         sheet = d3.select("head").append("style").property("sheet")
         sheet.insertRule "img {}", 0
         @rule = sheet.cssRules[0]
+
+        @canvas = document.createElement 'canvas'
+        @canvas.width = dim.png.w
+        @canvas.height = dim.png.h
+        @img = new Image()
+        @img.addEventListener 'load', render_cards.bind @
+        @img.src = "cards.svg"
 
         @selector = {}
         for item in [ "language", "ruleset" ]
@@ -167,11 +202,11 @@ class Area
         @rule.style.height = Math.round(156*@scale) + "px"
         for stack in @stacks
             stack.outer.style("top", Math.round(@scale * stack.y) + "px")
-        	    .style("left", Math.round(@scale * stack.x) + "px")
-        	    @alter_pile stack.pile
+            .style("left", Math.round(@scale * stack.x) + "px")
+            @alter_pile stack.pile
 
     # insert a stack into the pad presenting a pile data object
-    # init click and dblclick events and callbacks
+    # init click and dblclick events and callbacks/Karten
     add_pile: (pile) ->
         stack =
             pile: pile
@@ -180,11 +215,11 @@ class Area
             trans_x: 0
             trans_y: 0
         stack.outer = @pad.append("div")
-        	.classed("stack", true)
-        	.style("top", Math.round(@scale * stack.y) + "px")
-        	.style("left", Math.round(@scale * stack.x) + "px")
+            .classed("stack", true)
+            .style("top", Math.round(@scale * stack.y) + "px")
+            .style("left", Math.round(@scale * stack.x) + "px")
         stack.outer.append("img")
-            .attr("src", addr[0] + "empty" + addr[1])
+            .attr("src", cards["empty"])
             .on("dragstart", () ->
                 d3.event.preventDefault()
             )

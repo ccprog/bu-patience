@@ -1,7 +1,5 @@
 rulesrc = src/rulesets
 ruledir = web/rulesets
-cardsrc = src/cards
-carddir = web/cards
 
 schemas = $(ruledir)/ruleset_schema \
 		$(ruledir)/action_schema \
@@ -33,22 +31,9 @@ $(rulesets) : $(ruledir)/%.json: $(rulesrc)/%.coffee | $(ruledir)
 $(ruledir) : 
 	mkdir $(ruledir)
 
-svgs := $(wildcard $(cardsrc)/*.svg)
-pngs := $(patsubst $(cardsrc)/%.svg,$(carddir)/%.png,$(svgs))
-
-$(pngs) : $(carddir)/%.png: $(cardsrc)/%.svg | $(carddir)
-	rsvg-convert -o $@ -w 200 $<
-
-cards: $(pngs)
-	sed -i'~' -e's/^#.*/# '"`date --rfc-3339=seconds`"'/' web/patience.appcache
-
-$(carddir) : 
-	mkdir $(carddir)
-
-all: web/patience.js rules cards
+all: web/patience.js rules
 
 clean:
 	rm -fr $(ruledir)
-	rm -fr $(carddir)
 	rm -f web/patience.js
 	
