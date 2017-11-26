@@ -10,8 +10,6 @@ function get_preset ( $param ) {
     }
 }
 
-$dataset = '';
-
 function scan_options ( $dir, $param, $callback ) {
     global $dataset;
     $current = null;
@@ -44,6 +42,9 @@ function scan_options ( $dir, $param, $callback ) {
     );
 }
 
+$cards_version = file_get_contents("cards_version");
+$dataset = 'data-cards_version="' . $cards_version . '" ';
+
 $rules = scan_options('rulesets', 'ruleset', function ($dir, $entry, $key) {
     $content = file_get_contents($dir . "/" . $entry);
     $read = json_decode($content)->title;
@@ -69,7 +70,6 @@ $languages = scan_options('lang', 'language', function ($dir, $entry, $key) {
   <script type="application/ecmascript" src="patience.js" ></script>
   <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.css" />
   <link rel="stylesheet" type="text/css" href="patience.css" />
-  <link rel="preload" as="image" href="cards.svg" />
 </head>
 <body <?php echo $dataset ?>>
   <div id="page">

@@ -13,25 +13,21 @@ class Area
     cards = {}
     waiting = false
 
-    # render cards from svg to png data url and cache
-    render_cards = () ->
-        cards = {}
-        insert = (x, y, name) =>
-            ctx.clearRect 0, 0, dim.png.w, dim.png.h
-            ctx.drawImage @img,
-                x*dim.svg.w, y*dim.svg.h, dim.svg.w, dim.svg.h,
-                0, 0, dim.png.w, dim.png.h
-            cards[name] = @canvas.toDataURL "image/png"
-            if Object.keys(cards).length == 53 and waiting
-                @new_game waiting
-                waiting = false
-
-        ctx = @canvas.getContext '2d'
-        insert 2, 4, "back"
-        insert 3, 4, "empty"
-        for suit, i in base.suit_names
-            for value in [1..13]
-                insert value-1, i, "#{value}_#{suit}"
+    # load cards as a JSON list of data urls, persist and cache
+    load_cards = (cards_version) ->
+        d3.json('cards.json', (e, obj) =>
+            if e
+                throw new Error "no cards received\n" + e.message
+            else
+                cards = obj
+                try
+                    localStorage.setItem 'cards', JSON.stringify cards
+                    localStorage.setItem 'cards_version', cards_version
+                catch e
+                if waiting
+                    @new_game waiting
+                    waiting = false
+        )
 
     # counstruct simplified object for d3 data from pile
     to_view = (pile) ->
@@ -91,7 +87,7 @@ class Area
                     @help_window = window.open ruleset.help
                 else
                     @help_window.location = ruleset.help
-            if Object.keys(cards).length < 53
+            if Object.keys(cards).length < 54
                 waiting = ruleset
             else
                 @new_game ruleset
@@ -116,12 +112,14 @@ class Area
         sheet.insertRule "img {}", 0
         @rule = sheet.cssRules[0]
 
-        @canvas = document.createElement 'canvas'
-        @canvas.width = dim.png.w
-        @canvas.height = dim.png.h
-        @img = new Image()
-        @img.addEventListener 'load', render_cards.bind @
-        @img.src = "cards.svg"
+        try
+            cards_version = localStorage.getItem 'cards_version'
+            cards_ser = localStorage.getItem 'cards'
+            if presets.cards_version != cards_version || not cards_ser
+                load_cards.call @, presets.cards_version
+            else
+                cards = JSON.parse cards_ser
+        catch e
 
         @selector = {}
         for item in [ "language", "ruleset" ]
