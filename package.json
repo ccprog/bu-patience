@@ -1,0 +1,24 @@
+{
+  "name": "bu-patience",
+  "version": "1.0.0",
+  "description": "A HTML5 browser game coded in Coffeescript, aimed at implementing a number of patience card games.",
+  "dependencies": {},
+  "devDependencies": {
+    "coffeescript": "~1.6.1",
+    "grunt": "^1.0.1",
+    "grunt-contrib-coffee": "^2.0.0",
+    "jayschema": "^0.3.2",
+    "svg-icon-toolbox": "^0.2.2"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ccprog/bu-patience.git"
+  },
+  "author": "Claus Colloseus <ccprog@gmx.de>",
+  "license": "SEE LICENCE IN LICENCE",
+  "bugs": {
+    "url": "https://github.com/ccprog/bu-patience/issues"
+  },
+  "homepage": "https://github.com/ccprog/bu-patience#readme"
+}

@@ -118,6 +118,10 @@ the stamp may be not public domain, but the motives it features are.
 Pips and the backface are my own design. I claim no ownership and release their design
 to the public domain.
 
+Changes to the cardset need to be compiled to base64 data urls with
+
+    grunt cards
+
 ## Browser compatibility
 
 - IE11 and Edge
@@ -127,6 +131,10 @@ to the public domain.
 - Opera 12+
 
 ## Developing rulesets
+
+Be sure to install the dev dependencies with
+
+    npm install
 
 `src/rulefactory.coffee` contains all partial schema definitions alongsige the functions
 utilising them. You can follow the schema links down from the top level `ruleset` object to find
@@ -141,15 +149,12 @@ can be used to validate rulesets.
 - `point_schema` holds descriptions for point awarding rules
 - `lib_schema` holds the common base library for rules
 
-I utilize the current draft version (v4). Currently, there are only a few validators supporting
-this version. I have included a simple [node.js](http://nodejs.org) module `web/rulesets/val.js`
-that is mostly a wrapper for [JaySchema](https://github.com/natesilva/jayschema), but also verifies
+I still use the old [JaySchema](https://github.com/natesilva/jayschema) for validation, but also verify
 that piles are not overlapping and the deck is completely exhausted for filling the initial piles.
 
-Since JaySchema is not included here, you need to install it (and Coffeescript) yourself.
-Then you can call
+You can call
 
-    nodejs val.js [coffee file name]
+    node tests/val.js [qualified coffee file name]
 
 to test Coffescript source files. These files need to contain a global object `ruleset`.
 
@@ -157,7 +162,7 @@ It is also possible to test parts of rules. (usefull when the part in question l
 a _`oneOf`_ rule and you only get the result that none of the possible subschemas fit.)
 
 
-    nodejs val.js [coffee file name] [rule part pointer] [schema part pointer]
+    node tests/val.js [qualified coffee file name] [rule part pointer] [schema part pointer]
 
 - `rule part pointer` must be a valid
   [JSON Pointer](http://tools.ietf.org/html/draft-ietf-appsawg-json-pointer-07) to the
@@ -167,35 +172,35 @@ a _`oneOf`_ rule and you only get the result that none of the possible subschema
 
 __Example__:
 
-    nodejs val.js auld_lang_syne.json deal_action/rule action/definitions/swap
+    nodejs tests/val.js src/rulesets/auld_lang_syne.coffee deal_action/rule action/definitions/swap
 
 would test the `rule` property of the `deal_action` entry against the `definitions/swap` part
 of file `action_schema`.
 
 After validation you can convert them to JSON files with
 
-    ./to_json.js [coffee file name]
+    grunt rulesets
+
+To compile `val.js` itself, run
+
+    grunt coffee:validator
 
 ## Compilation
+
+Be sure to install the dev dependencies with
+
+    npm install
 
 As `src/rulefactory.coffee` features both the rule functions and the schema elements for their
 rule parameters, some special handling is needed.
 
-    .src/splitter.js
+    grunt splitter
 
 will extract the schema objects and compile the five schema files, and additionally produce a file
 `src/patience_factory.coffee` that only contains the function part.
 
-The make system for the application handles this file as temporary; all files `src/patience_*.coffee`
+The compile task for the application handles this file as temporary; all files `src/patience_*.coffee`
 get compiled into a single javascript file `web/patience.js`.
 
-    make [verb]
- 
-builds these parts:
- 
-- _(no verb)_: builds `web/patience.js` and the `src/rulesets/*_schema` files
-- `rules` compiles all `src/rulesets/*.coffee` files to `web/rulesets/*.json`
-- `cards` converts the `src/cards/*.svg` files to `web/cards/*.png`. This part requires
-  [librsvg-bin](https://wiki.gnome.org/LibRsvg)
-- `all` builds all parts
-- `clean` removes `web/patience.js`, `web/rulesets` and `web/cards`
+    grunt compile
+
