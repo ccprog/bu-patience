@@ -12,26 +12,33 @@ module.exports = function(grunt) {
     }
 
     const cards = {};
+    function rename (fn, format) {
+        return basename(fn, format)
+        .replace('jack', '11')
+        .replace('queen', '12')
+        .replace('king', '13');
+    }
 
-    function encode (fn, callback) {
-        exec('base64 -w0 ' + fn, (error, stdout, stderr) => {
-            if (error)  return callback(error);
-    
-            let id = basename(fn, '.png');
-            id = id.replace('jack', '11');
-            id = id.replace('queen', '12');
-            id = id.replace('king', '13');
-            grunt.log.writeln('Encoding card ' + id);
-            cards[id] = 'data:image/png;base64,' + stdout;
-    
-            if (Object.keys(cards).length === 54) {
-                grunt.log.write('exporting to JSON...');
-                grunt.file.write('web/cards.json', JSON.stringify(cards));
-                execSync('rm -r temp/');
-                grunt.log.writeln('Done');
-            }
-            return callback(null);
-        });
+    function urlescape (fn, callback) {
+        const id = rename(fn, '.svg');
+
+        const markup = grunt.file.read(fn);
+        const escaped = markup
+            .replace('<?xml version="1.0" encoding="UTF-8" standalone="no"?>', '')
+            .replace(/\s+/g, ' ')
+            .replace(/#/g, '%23')
+            .trim();
+
+        grunt.log.writeln('Encoding card ' + id);
+        cards[id] = 'data:image/svg+xml,' + escaped;
+
+        if (Object.keys(cards).length === 54) {
+            grunt.log.write('exporting to JSON...');
+            grunt.file.write('web/cards.json', JSON.stringify(cards));
+            execSync('rm -r temp/');
+            grunt.log.writeln('Done');
+        }
+        return callback(null);
     }
     
     grunt.initConfig({
@@ -41,10 +48,10 @@ module.exports = function(grunt) {
             tasks: [
                 { task: 'export', arg: {
                     ids: list,
-                    format: 'png',
+                    format: 'svg',
                     dir: 'temp/',
                     exportOptions: { width: 200 },
-                    postProcess: encode
+                    postProcess: urlescape
                 } }
             ]
             }

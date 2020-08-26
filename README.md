@@ -118,7 +118,7 @@ the stamp may be not public domain, but the motives it features are.
 Pips and the backface are my own design. I claim no ownership and release their design
 to the public domain.
 
-Changes to the cardset need to be compiled to base64 data urls with
+Changes to the cardset need to be compiled to data urls with
 
     grunt cards
 
